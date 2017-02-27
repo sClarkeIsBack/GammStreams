@@ -1,1 +1,452 @@
-exec("import re;import base64");exec(base64.b64decode('IyMjIyMjIyMjIyMjI0ltcG9ydHMjIyMjIyMjIyMjIyMjDQppbXBvcnQgYmFzZTY0LG9zLHJlLHJlcXVlc3RzLHN0cmluZyxzeXMsdXJsbGliLGpzb24sdXJscGFyc2UsZGF0ZXRpbWUsemlwZmlsZQ0KaW1wb3J0IHhibWMseGJtY2FkZG9uLHhibWNndWkseGJtY3BsdWdpbg0KZnJvbSByZXNvdXJjZXMubW9kdWxlcyBpbXBvcnQgY2xpZW50LGNvbnRyb2wNCiMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KDQojIyMjIyMjIyMjIyMjRGVmaW5lZCBTdHJpbmdzIyMjIyMjIyMjIyMjIw0KYWRkb25faWQgICAgID0gJ3BsdWdpbi52aWRlby5HYW1tYVN0cmVhbXMnDQpzZWxmQWRkb24gICAgPSB4Ym1jYWRkb24uQWRkb24oaWQ9YWRkb25faWQpDQppY29uICAgICAgICAgPSB4Ym1jLnRyYW5zbGF0ZVBhdGgob3MucGF0aC5qb2luKCdzcGVjaWFsOi8vaG9tZS9hZGRvbnMvJyArIGFkZG9uX2lkLCAnaWNvbi5wbmcnKSkNCmZhbmFydCAgICAgICA9IHhibWMudHJhbnNsYXRlUGF0aChvcy5wYXRoLmpvaW4oJ3NwZWNpYWw6Ly9ob21lL2FkZG9ucy8nICsgYWRkb25faWQgLCAnZmFuYXJ0LmpwZycpKQ0KDQp1c2VybmFtZSAgICAgPSBjb250cm9sLnNldHRpbmcoJ1VzZXJuYW1lJykNCnBhc3N3b3JkICAgICA9IGNvbnRyb2wuc2V0dGluZygnUGFzc3dvcmQnKQ0KDQpob3N0ICAgICAgICAgPSAnaHR0cDovL2dhbW1haXB0di5kZG5zLm5ldCcNCnBvcnQgICAgICAgICA9ICc4MTI3Jw0KDQpsaXZlX3VybCAgICAgPSAnJXM6JXMvZW5pZ21hMi5waHA/dXNlcm5hbWU9JXMmcGFzc3dvcmQ9JXMmdHlwZT1nZXRfbGl2ZV9jYXRlZ29yaWVzJyUoaG9zdCxwb3J0LHVzZXJuYW1lLHBhc3N3b3JkKQ0Kdm9kX3VybCAgICAgID0gJyVzOiVzL2VuaWdtYTIucGhwP3VzZXJuYW1lPSVzJnBhc3N3b3JkPSVzJnR5cGU9Z2V0X3ZvZF9jYXRlZ29yaWVzJyUoaG9zdCxwb3J0LHVzZXJuYW1lLHBhc3N3b3JkKQ0KcGFuZWxfYXBpICAgID0gJyVzOiVzL3BhbmVsX2FwaS5waHA/dXNlcm5hbWU9JXMmcGFzc3dvcmQ9JXMnJShob3N0LHBvcnQsdXNlcm5hbWUscGFzc3dvcmQpDQpwbGF5X3VybCAgICAgPSAnJXM6JXMvbGl2ZS8lcy8lcy8nJShob3N0LHBvcnQsdXNlcm5hbWUscGFzc3dvcmQpDQoNCmFkdmFuY2VkX3NldHRpbmdzICAgICAgICAgICA9ICB4Ym1jLnRyYW5zbGF0ZVBhdGgoJ3NwZWNpYWw6Ly9ob21lL2FkZG9ucy8nK2FkZG9uX2lkKycvcmVzb3VyY2VzL2FkdmFuY2VkX3NldHRpbmdzJykNCmFkdmFuY2VkX3NldHRpbmdzX3RhcmdldCAgICA9ICB4Ym1jLnRyYW5zbGF0ZVBhdGgob3MucGF0aC5qb2luKCdzcGVjaWFsOi8vaG9tZS91c2VyZGF0YScsJ2FkdmFuY2Vkc2V0dGluZ3MueG1sJykpDQojIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIw0KDQpkZWYgc3RhcnQoKToNCglpZiB1c2VybmFtZT09IiI6DQoJCXVzZXIgPSB1c2VycG9wdXAoKQ0KCQlwYXNzdz0gcGFzc3BvcHVwKCkNCgkJY29udHJvbC5zZXRTZXR0aW5nKCdVc2VybmFtZScsdXNlcikNCgkJY29udHJvbC5zZXRTZXR0aW5nKCdQYXNzd29yZCcscGFzc3cpDQoJCXJlZnJlc2goKQ0KCQlhdXRoID0gJyVzOiVzL2VuaWdtYTIucGhwP3VzZXJuYW1lPSVzJnBhc3N3b3JkPSVzJnR5cGU9Z2V0X3ZvZF9jYXRlZ29yaWVzJyUoaG9zdCxwb3J0LHVzZXIscGFzc3cpDQoJCWF1dGggPSBPUEVOX1VSTChhdXRoKQ0KCQlpZiBhdXRoID09ICIiOg0KCQkJbGluZTEgPSAiSW5jb3JyZWN0IExvZ2luIERldGFpbHMiDQoJCQlsaW5lMiA9ICJQbGVhc2UgUmUtZW50ZXIiIA0KCQkJbGluZTMgPSAiIiANCgkJCXhibWNndWkuRGlhbG9nKCkub2soJ0F0dGVudGlvbicsIGxpbmUxLCBsaW5lMiwgbGluZTMpDQoJCQlzdGFydCgpDQoJCWVsc2U6DQoJCQlsaW5lMSA9ICJMb2dpbiBTdWNzZXNzZnVsbCINCgkJCWxpbmUyID0gIldlbGNvbWUgdG8gR2FtbWEgU3RyZWFtcyIgDQoJCQlsaW5lMyA9ICgnW0NPTE9SIHB1cnBsZV0lc1svQ09MT1JdJyV1c2VyKQ0KCQkJeGJtY2d1aS5EaWFsb2coKS5vaygnR2FtbWEgU3RyZWFtcycsIGxpbmUxLCBsaW5lMiwgbGluZTMpDQoJCQlwdnJzZXR1cCgpDQoJCQlhc2V0dGluZ3MoKQ0KCQkJcmVmcmVzaCgpDQoJCQlob21lKCkNCgllbHNlOg0KCQlhdXRoID0gJyVzOiVzL2VuaWdtYTIucGhwP3VzZXJuYW1lPSVzJnBhc3N3b3JkPSVzJnR5cGU9Z2V0X3ZvZF9jYXRlZ29yaWVzJyUoaG9zdCxwb3J0LHVzZXJuYW1lLHBhc3N3b3JkKQ0KCQlhdXRoID0gT1BFTl9VUkwoYXV0aCkNCgkJaWYgbm90IGF1dGg9PSIiOg0KCQkJYWRkRGlyKCdBY2NvdW50IEluZm9ybWF0aW9uJywndXJsJyw2LGljb24sZmFuYXJ0LCcnKQ0KCQkJYWRkRGlyKCdMaXZlIElQVFYnLCdsaXZlJywxLGljb24sZmFuYXJ0LCcnKQ0KCQkJaWYgeGJtYy5nZXRDb25kVmlzaWJpbGl0eSgnU3lzdGVtLkhhc0FkZG9uKHB2ci5pcHR2c2ltcGxlKScpOg0KCQkJCWFkZERpcignVFYgR3VpZGUnLCdwdnInLDcsaWNvbixmYW5hcnQsJycpDQoJCQlhZGREaXIoJ1ZPRCcsJ3ZvZCcsMyxpY29uLGZhbmFydCwnJykNCgkJCWFkZERpcignU2VhcmNoJywndXJsJyw1LGljb24sZmFuYXJ0LCcnKQ0KCQkJDQpkZWYgaG9tZSgpOg0KCWFkZERpcignQWNjb3VudCBJbmZvcm1hdGlvbicsJ3VybCcsNixpY29uLGZhbmFydCwnJykNCglhZGREaXIoJ0xpdmUgSVBUVicsJ2xpdmUnLDEsaWNvbixmYW5hcnQsJycpDQoJaWYgeGJtYy5nZXRDb25kVmlzaWJpbGl0eSgnU3lzdGVtLkhhc0FkZG9uKHB2ci5pcHR2c2ltcGxlKScpOg0KCQlhZGREaXIoJ1RWIEd1aWRlJywncHZyJyw3LGljb24sZmFuYXJ0LCcnKQ0KCWFkZERpcignVk9EJywndm9kJywzLGljb24sZmFuYXJ0LCcnKQ0KCWFkZERpcignU2VhcmNoJywnJyw1LGljb24sZmFuYXJ0LCcnKQ0KCQkNCmRlZiBsaXZlY2F0ZWdvcnkodXJsKToNCglvcGVuID0gT1BFTl9VUkwobGl2ZV91cmwpDQoJYWxsX2NhdHMgPSByZWdleF9nZXRfYWxsKG9wZW4sJzxjaGFubmVsPicsJzwvY2hhbm5lbD4nKQ0KCWZvciBhIGluIGFsbF9jYXRzOg0KCQluYW1lID0gcmVnZXhfZnJvbV90byhhLCc8dGl0bGU+JywnPC90aXRsZT4nKQ0KCQl1cmwxICA9IHJlZ2V4X2Zyb21fdG8oYSwnPHBsYXlsaXN0X3VybD4nLCc8L3BsYXlsaXN0X3VybD4nKS5yZXBsYWNlKCc8IVtDREFUQVsnLCcnKS5yZXBsYWNlKCddXT4nLCcnKQ0KCQlhZGREaXIoYmFzZTY0LmI2NGRlY29kZShuYW1lKSx1cmwxLDIsaWNvbixmYW5hcnQsJycpDQoJCQ0KZGVmIExpdmVsaXN0KHVybCk6DQoJb3BlbiA9IE9QRU5fVVJMKHVybCkNCglhbGxfY2F0cyA9IHJlZ2V4X2dldF9hbGwob3BlbiwnPGNoYW5uZWw+JywnPC9jaGFubmVsPicpDQoJZm9yIGEgaW4gYWxsX2NhdHM6DQoJCW5hbWUgPSByZWdleF9mcm9tX3RvKGEsJzx0aXRsZT4nLCc8L3RpdGxlPicpDQoJCW5hbWUgPSBiYXNlNjQuYjY0ZGVjb2RlKG5hbWUpDQoJCW5hbWUgPSByZS5zdWIoJ1xbLio/bWluICcsJy0nLG5hbWUpDQoJCXRodW1iPSByZWdleF9mcm9tX3RvKGEsJzxkZXNjX2ltYWdlPicsJzwvZGVzY19pbWFnZT4nKS5yZXBsYWNlKCc8IVtDREFUQVsnLCcnKS5yZXBsYWNlKCddXT4nLCcnKQ0KCQl1cmwxICA9IHJlZ2V4X2Zyb21fdG8oYSwnPHN0cmVhbV91cmw+JywnPC9zdHJlYW1fdXJsPicpLnJlcGxhY2UoJzwhW0NEQVRBWycsJycpLnJlcGxhY2UoJ11dPicsJycpDQoJCWRlc2MgPSByZWdleF9mcm9tX3RvKGEsJzxkZXNjcmlwdGlvbj4nLCc8L2Rlc2NyaXB0aW9uPicpDQoJCWFkZERpcihuYW1lLHVybDEsNCx0aHVtYixmYW5hcnQsYmFzZTY0LmI2NGRlY29kZShkZXNjKSkNCgkJDQoJDQpkZWYgdm9kKHVybCk6DQoJaWYgdXJsID09InZvZCI6DQoJCW9wZW4gPSBPUEVOX1VSTCh2b2RfdXJsKQ0KCWVsc2U6DQoJCW9wZW4gPSBPUEVOX1VSTCh1cmwpDQoJYWxsX2NhdHMgPSByZWdleF9nZXRfYWxsKG9wZW4sJzxjaGFubmVsPicsJzwvY2hhbm5lbD4nKQ0KCWZvciBhIGluIGFsbF9jYXRzOg0KCQlpZiAnPHBsYXlsaXN0X3VybD4nIGluIG9wZW46DQoJCQluYW1lID0gcmVnZXhfZnJvbV90byhhLCc8dGl0bGU+JywnPC90aXRsZT4nKQ0KCQkJdXJsMSAgPSByZWdleF9mcm9tX3RvKGEsJzxwbGF5bGlzdF91cmw+JywnPC9wbGF5bGlzdF91cmw+JykucmVwbGFjZSgnPCFbQ0RBVEFbJywnJykucmVwbGFjZSgnXV0+JywnJykNCgkJCWFkZERpcihzdHIoYmFzZTY0LmI2NGRlY29kZShuYW1lKSkucmVwbGFjZSgnPycsJycpLHVybDEsMyxpY29uLGZhbmFydCwnJykNCgkJZWxzZToNCgkJCW5hbWUgPSByZWdleF9mcm9tX3RvKGEsJzx0aXRsZT4nLCc8L3RpdGxlPicpDQoJCQl0aHVtYj0gcmVnZXhfZnJvbV90byhhLCc8ZGVzY19pbWFnZT4nLCc8L2Rlc2NfaW1hZ2U+JykucmVwbGFjZSgnPCFbQ0RBVEFbJywnJykucmVwbGFjZSgnXV0+JywnJykNCgkJCXVybCAgPSByZWdleF9mcm9tX3RvKGEsJzxzdHJlYW1fdXJsPicsJzwvc3RyZWFtX3VybD4nKS5yZXBsYWNlKCc8IVtDREFUQVsnLCcnKS5yZXBsYWNlKCddXT4nLCcnKQ0KCQkJZGVzYyA9IHJlZ2V4X2Zyb21fdG8oYSwnPGRlc2NyaXB0aW9uPicsJzwvZGVzY3JpcHRpb24+JykNCgkJCWFkZERpcihzdHIoYmFzZTY0LmI2NGRlY29kZShuYW1lKSkucmVwbGFjZSgnPycsJycpLHVybCw0LHRodW1iLGZhbmFydCxiYXNlNjQuYjY0ZGVjb2RlKGRlc2MpKQ0KCQkNCmRlZiBhY2NvdW50aW5mbygpOg0KCW9wZW4gPSBPUEVOX1VSTChwYW5lbF9hcGkpDQoJdXNlcm5hbWUgID0gcmVnZXhfZnJvbV90byhvcGVuLCcidXNlcm5hbWUiOiInLCciJykNCglwYXNzd29yZCAgPSByZWdleF9mcm9tX3RvKG9wZW4sJyJwYXNzd29yZCI6IicsJyInKQ0KCXN0YXR1cyAgICA9IHJlZ2V4X2Zyb21fdG8ob3BlbiwnInN0YXR1cyI6IicsJyInKQ0KCWNvbm5lY3RzICA9IHJlZ2V4X2Zyb21fdG8ob3BlbiwnIm1heF9jb25uZWN0aW9ucyI6IicsJyInKQ0KCWV4cGlyeSAgICA9IHJlZ2V4X2Zyb21fdG8ob3BlbiwnLCJleHBfZGF0ZSI6JywnLCcpLnJlcGxhY2UoIiciLCIiKS5yZXBsYWNlKCciJywnJykNCglleHBpcnkgICAgPSBkYXRldGltZS5kYXRldGltZS5mcm9tdGltZXN0YW1wKGludChleHBpcnkpKS5zdHJmdGltZSgnJWQvJW0vJVkgLSAlSDolTScpDQoJYWRkRGlyKCdbQ09MT1IgcHVycGxlXUFjY291bnQgU3RhdHVzIDpbL0NPTE9SXSAlcyclc3RhdHVzLCcnLCcnLGljb24sZmFuYXJ0LCcnKQ0KCWFkZERpcignW0NPTE9SIHB1cnBsZV1FeHBpcnkgRGF0ZTpbL0NPTE9SXSAnK2V4cGlyeSwnJywnJyxpY29uLGZhbmFydCwnJykNCglhZGREaXIoJ1tDT0xPUiBwdXJwbGVdVXNlcm5hbWUgOlsvQ09MT1JdICcrdXNlcm5hbWUsJycsJycsaWNvbixmYW5hcnQsJycpDQoJYWRkRGlyKCdbQ09MT1IgcHVycGxlXVBhc3N3b3JkIDpbL0NPTE9SXSAnK3Bhc3N3b3JkLCcnLCcnLGljb24sZmFuYXJ0LCcnKQ0KCWFkZERpcignW0NPTE9SIHB1cnBsZV1BbGxvd2VkIENvbm5lY3Rpb25zOlsvQ09MT1JdICcrY29ubmVjdHMsJycsJycsaWNvbixmYW5hcnQsJycpDQoJDQpkZWYgc2VhcmNoZGlhbG9nKCk6DQoJc2VhcmNoID0gY29udHJvbC5pbnB1dERpYWxvZyhoZWFkaW5nPSdTZWFyY2ggZm9yIGEgVFYgY2hhbm5lbDonKQ0KCWlmIHNlYXJjaD09IiI6DQoJCXJldHVybg0KCWVsc2U6DQoJCXJldHVybiBzZWFyY2gNCgkNCmRlZiBzZWFyY2goKToNCgl0ZXh0ID0gc2VhcmNoZGlhbG9nKCkNCglvcGVuID0gT1BFTl9VUkwocGFuZWxfYXBpKQ0KCWFsbF9jaGFucyA9IHJlZ2V4X2dldF9hbGwob3BlbiwneyJudW0iOicsJ2VwZycpDQoJZm9yIGEgaW4gYWxsX2NoYW5zOg0KCQluYW1lID0gcmVnZXhfZnJvbV90byhhLCduYW1lIjoiJywnIicpLnJlcGxhY2UoJ1wvJywnLycpDQoJCXVybCAgPSByZWdleF9mcm9tX3RvKGEsJyJzdHJlYW1faWQiOiInLCciJykNCgkJdGh1bWI9IHJlZ2V4X2Zyb21fdG8oYSwnc3RyZWFtX2ljb24iOiInLCciJykucmVwbGFjZSgnXC8nLCcvJykNCgkJaWYgdGV4dCBpbiBuYW1lLmxvd2VyKCk6DQoJCQlhZGREaXIobmFtZSxwbGF5X3VybCt1cmwrJy50cycsNCx0aHVtYixmYW5hcnQsJycpDQoJCWVsaWYgdGV4dCBub3QgaW4gbmFtZS5sb3dlcigpIGFuZCB0ZXh0IGluIG5hbWU6DQoJCQlhZGREaXIobmFtZSxwbGF5X3VybCt1cmwrJy50cycsNCx0aHVtYixmYW5hcnQsJycpDQoJCQkNCgkNCmRlZiB1c2VycG9wdXAoKToNCglrYiA9eGJtYy5LZXlib2FyZCAoJycsICdoZWFkaW5nJywgVHJ1ZSkNCglrYi5zZXRIZWFkaW5nKCdFbnRlciBVc2VybmFtZScpDQoJa2Iuc2V0SGlkZGVuSW5wdXQoRmFsc2UpDQoJa2IuZG9Nb2RhbCgpDQoJaWYgKGtiLmlzQ29uZmlybWVkKCkpOg0KCQl0ZXh0ID0ga2IuZ2V0VGV4dCgpDQoJCXJldHVybiB0ZXh0DQoJZWxzZToNCgkJcmV0dXJuIEZhbHNlDQoJCQ0KZGVmIHBhc3Nwb3B1cCgpOg0KCWtiID14Ym1jLktleWJvYXJkICgnJywgJ2hlYWRpbmcnLCBUcnVlKQ0KCWtiLnNldEhlYWRpbmcoJ0VudGVyIFBhc3N3b3JkJykNCglrYi5zZXRIaWRkZW5JbnB1dChUcnVlKQ0KCWtiLmRvTW9kYWwoKQ0KCWlmIChrYi5pc0NvbmZpcm1lZCgpKToNCgkJdGV4dCA9IGtiLmdldFRleHQoKQ0KCQlyZXR1cm4gdGV4dA0KCWVsc2U6DQoJCXJldHVybiBGYWxzZQ0KCQkNCgkJDQpkZWYgc3RyZWFtX3ZpZGVvKHVybCk6DQoJbGl6ID0geGJtY2d1aS5MaXN0SXRlbSgnJywgaWNvbkltYWdlPSdEZWZhdWx0VmlkZW8ucG5nJywgdGh1bWJuYWlsSW1hZ2U9aWNvbikNCglsaXouc2V0SW5mbyh0eXBlPSdWaWRlbycsIGluZm9MYWJlbHM9eydUaXRsZSc6ICcnLCAnUGxvdCc6ICcnfSkNCglsaXouc2V0UHJvcGVydHkoJ0lzUGxheWFibGUnLCd0cnVlJykNCglsaXouc2V0UGF0aChzdHIodXJsKSkNCgl4Ym1jcGx1Z2luLnNldFJlc29sdmVkVXJsKGludChzeXMuYXJndlsxXSksIFRydWUsIGxpeikNCgkNCmRlZiByZWZyZXNoKCk6DQoJeGJtYy5leGVjdXRlYnVpbHRpbignQ29udGFpbmVyLlJlZnJlc2gnKQ0KCQ0KZGVmIGFzZXR0aW5ncygpOg0KCWRpYWxvZyA9IHhibWNndWkuRGlhbG9nKCkNCgljaG9pY2UgPSBkaWFsb2cueWVzbm8oJ0dhbW1hIFN0cmVhbXMnLCAnUGxlYXNlIFNlbGVjdCBUaGUgUkFNIFNpemUgb2YgWW91ciBEZXZpY2UnLCB5ZXNsYWJlbD0nTGVzcyB0aGFuIDFHQiBSQU0nLCBub2xhYmVsPSdNb3JlIHRoYW4gMUdCIFJBTScpDQoJaWYgY2hvaWNlOg0KCQlsZXNzdGhhbigpDQoJZWxzZToNCgkJbW9yZXRoYW4oKQ0KDQoJCQkNCmRlZiB0dmd1aWRlKCk6DQoJeGJtYy5leGVjdXRlYnVpbHRpbignQWN0aXZhdGVXaW5kb3coVFZHdWlkZSknKQ0KCQ0KZGVmIHB2cnNldHVwKCk6DQoJZGlhbG9nID0geGJtY2d1aS5EaWFsb2coKQ0KCWNob2ljZSA9IGRpYWxvZy55ZXNubygnR2FtbWEgU3RyZWFtcycsICdXb3VsZCB5b3UgbGlrZSB1cyB0byBTZXR1cCB0aGUgVFYgR3VpZGUgZm9yIFlvdT8nLCB5ZXNsYWJlbD0nWWVzJywgbm9sYWJlbD0nTm8nKQ0KCWlmIGNob2ljZToNCgkJY29ycmVjdFBWUigpDQoJZWxzZToNCgkJcmV0dXJuDQoJDQoJCQkNCmRlZiBjb3JyZWN0UFZSKCk6DQoNCglhZGRvbiA9IHhibWNhZGRvbi5BZGRvbigncGx1Z2luLnZpZGVvLkdhbW1hU3RyZWFtcycpDQoJdXNlcm5hbWVfdGV4dCA9IGFkZG9uLmdldFNldHRpbmcoaWQ9J1VzZXJuYW1lJykNCglwYXNzd29yZF90ZXh0ID0gYWRkb24uZ2V0U2V0dGluZyhpZD0nUGFzc3dvcmQnKQ0KCWpzb25TZXRQVlIgPSAneyJqc29ucnBjIjoiMi4wIiwgIm1ldGhvZCI6IlNldHRpbmdzLlNldFNldHRpbmdWYWx1ZSIsICJwYXJhbXMiOnsic2V0dGluZyI6InB2cm1hbmFnZXIuZW5hYmxlZCIsICJ2YWx1ZSI6dHJ1ZX0sImlkIjoxfScNCglJUFRWb24gCSAgID0gJ3sianNvbnJwYyI6IjIuMCIsIm1ldGhvZCI6IkFkZG9ucy5TZXRBZGRvbkVuYWJsZWQiLCJwYXJhbXMiOnsiYWRkb25pZCI6InB2ci5pcHR2c2ltcGxlIiwiZW5hYmxlZCI6dHJ1ZX0sImlkIjoxfScNCgludWxsZGVtbyAgID0gJ3sianNvbnJwYyI6IjIuMCIsIm1ldGhvZCI6IkFkZG9ucy5TZXRBZGRvbkVuYWJsZWQiLCJwYXJhbXMiOnsiYWRkb25pZCI6InB2ci5kZW1vIiwiZW5hYmxlZCI6ZmFsc2V9LCJpZCI6MX0nDQoJbG9naW51cmwgICA9ICJodHRwOi8vZ2FtbWFpcHR2LmRkbnMubmV0OjgxMjcvZ2V0LnBocD91c2VybmFtZT0iICsgdXNlcm5hbWVfdGV4dCArICImcGFzc3dvcmQ9IiArIHBhc3N3b3JkX3RleHQgKyAiJnR5cGU9bTN1X3BsdXMmb3V0cHV0PXRzIg0KCUVQR3VybCAgICAgPSAiaHR0cDovL2dhbW1haXB0di5kZG5zLm5ldDo4MTI3L3htbHR2LnBocD91c2VybmFtZT0iICsgdXNlcm5hbWVfdGV4dCArICImcGFzc3dvcmQ9IiArIHBhc3N3b3JkX3RleHQgKyAiJnR5cGU9bTN1X3BsdXMmb3V0cHV0PXRzIg0KDQoJeGJtYy5leGVjdXRlSlNPTlJQQyhqc29uU2V0UFZSKQ0KCXhibWMuZXhlY3V0ZUpTT05SUEMoSVBUVm9uKQ0KCXhibWMuZXhlY3V0ZUpTT05SUEMobnVsbGRlbW8pDQoJDQoJbW9pc3QgPSB4Ym1jYWRkb24uQWRkb24oJ3B2ci5pcHR2c2ltcGxlJykNCgltb2lzdC5zZXRTZXR0aW5nKGlkPSdtM3VVcmwnLCB2YWx1ZT1sb2dpbnVybCkNCgltb2lzdC5zZXRTZXR0aW5nKGlkPSdlcGdVcmwnLCB2YWx1ZT1FUEd1cmwpDQoJbW9pc3Quc2V0U2V0dGluZyhpZD0nbTN1Q2FjaGUnLCB2YWx1ZT0iZmFsc2UiKQ0KCW1vaXN0LnNldFNldHRpbmcoaWQ9J2VwZ0NhY2hlJywgdmFsdWU9ImZhbHNlIikNCgl4Ym1jLmV4ZWN1dGVidWlsdGluKCJDb250YWluZXIuUmVmcmVzaCIpDQoJDQoNCmNsYXNzIFRyYWlsZXI6DQogICAgZGVmIF9faW5pdF9fKHNlbGYpOg0KICAgICAgICBzZWxmLmJhc2VfbGluayA9ICdodHRwOi8vd3d3LnlvdXR1YmUuY29tJw0KICAgICAgICBzZWxmLmtleV9saW5rID0gJ1FVbDZZVk41UW5aRVMzSm5TVTFOVm1SUGFqWlNiMXBuVVdoYVN6UkhNM015YkRaWGVWaG4nDQogICAgICAgIHNlbGYua2V5X2xpbmsgPSAnJmtleT0lcycgJSBiYXNlNjQudXJsc2FmZV9iNjRkZWNvZGUoc2VsZi5rZXlfbGluaykNCiAgICAgICAgc2VsZi5zZWFyY2hfbGluayA9ICdodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS95b3V0dWJlL3YzL3NlYXJjaD9wYXJ0PXNuaXBwZXQmdHlwZT12aWRlbyZtYXhSZXN1bHRzPTUmcT0lcycNCiAgICAgICAgc2VsZi55b3V0dWJlX3NlYXJjaCA9ICdodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS95b3V0dWJlL3YzL3NlYXJjaD9xPScNCiAgICAgICAgc2VsZi55b3V0dWJlX3dhdGNoID0gJ2h0dHA6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj0lcycNCg0KICAgIGRlZiBwbGF5KHNlbGYsIG5hbWUsIHVybD1Ob25lKToNCiAgICAgICAgdHJ5Og0KICAgICAgICAgICAgdXJsID0gc2VsZi53b3JrZXIobmFtZSwgdXJsKQ0KICAgICAgICAgICAgaWYgdXJsID09IE5vbmU6IHJldHVybg0KDQogICAgICAgICAgICB0aXRsZSA9IGNvbnRyb2wuaW5mb0xhYmVsKCdsaXN0aXRlbS50aXRsZScpDQogICAgICAgICAgICBpZiB0aXRsZSA9PSAnJzogdGl0bGUgPSBjb250cm9sLmluZm9MYWJlbCgnbGlzdGl0ZW0ubGFiZWwnKQ0KICAgICAgICAgICAgaWNvbiA9IGNvbnRyb2wuaW5mb0xhYmVsKCdsaXN0aXRlbS5pY29uJykNCg0KICAgICAgICAgICAgaXRlbSA9IGNvbnRyb2wuaXRlbShwYXRoPXVybCwgaWNvbkltYWdlPWljb24sIHRodW1ibmFpbEltYWdlPWljb24pDQogICAgICAgICAgICB0cnk6IGl0ZW0uc2V0QXJ0KHsnaWNvbic6IGljb259KQ0KICAgICAgICAgICAgZXhjZXB0OiBwYXNzDQogICAgICAgICAgICBpdGVtLnNldEluZm8odHlwZT0nVmlkZW8nLCBpbmZvTGFiZWxzID0geyd0aXRsZSc6IHRpdGxlfSkNCiAgICAgICAgICAgIGNvbnRyb2wucGxheWVyLnBsYXkodXJsLCBpdGVtKQ0KICAgICAgICBleGNlcHQ6DQogICAgICAgICAgICBwYXNzDQoNCiAgICBkZWYgd29ya2VyKHNlbGYsIG5hbWUsIHVybCk6DQogICAgICAgIHRyeToNCiAgICAgICAgICAgIGlmIHVybC5zdGFydHN3aXRoKHNlbGYuYmFzZV9saW5rKToNCiAgICAgICAgICAgICAgICB1cmwgPSBzZWxmLnJlc29sdmUodXJsKQ0KICAgICAgICAgICAgICAgIGlmIHVybCA9PSBOb25lOiByYWlzZSBFeGNlcHRpb24oKQ0KICAgICAgICAgICAgICAgIHJldHVybiB1cmwNCiAgICAgICAgICAgIGVsaWYgbm90IHVybC5zdGFydHN3aXRoKCdodHRwOi8vJyk6DQogICAgICAgICAgICAgICAgdXJsID0gc2VsZi55b3V0dWJlX3dhdGNoICUgdXJsDQogICAgICAgICAgICAgICAgdXJsID0gc2VsZi5yZXNvbHZlKHVybCkNCiAgICAgICAgICAgICAgICBpZiB1cmwgPT0gTm9uZTogcmFpc2UgRXhjZXB0aW9uKCkNCiAgICAgICAgICAgICAgICByZXR1cm4gdXJsDQogICAgICAgICAgICBlbHNlOg0KICAgICAgICAgICAgICAgIHJhaXNlIEV4Y2VwdGlvbigpDQogICAgICAgIGV4Y2VwdDoNCiAgICAgICAgICAgIHF1ZXJ5ID0gbmFtZSArICcgdHJhaWxlcicNCiAgICAgICAgICAgIHF1ZXJ5ID0gc2VsZi55b3V0dWJlX3NlYXJjaCArIHF1ZXJ5DQogICAgICAgICAgICB1cmwgPSBzZWxmLnNlYXJjaChxdWVyeSkNCiAgICAgICAgICAgIGlmIHVybCA9PSBOb25lOiByZXR1cm4NCiAgICAgICAgICAgIHJldHVybiB1cmwNCg0KDQogICAgZGVmIHNlYXJjaChzZWxmLCB1cmwpOg0KICAgICAgICB0cnk6DQogICAgICAgICAgICBxdWVyeSA9IHVybHBhcnNlLnBhcnNlX3FzKHVybHBhcnNlLnVybHBhcnNlKHVybCkucXVlcnkpWydxJ11bMF0NCg0KICAgICAgICAgICAgdXJsID0gc2VsZi5zZWFyY2hfbGluayAlIHVybGxpYi5xdW90ZV9wbHVzKHF1ZXJ5KSArIHNlbGYua2V5X2xpbmsNCg0KICAgICAgICAgICAgcmVzdWx0ID0gY2xpZW50LnJlcXVlc3QodXJsKQ0KDQogICAgICAgICAgICBpdGVtcyA9IGpzb24ubG9hZHMocmVzdWx0KVsnaXRlbXMnXQ0KICAgICAgICAgICAgaXRlbXMgPSBbKGlbJ2lkJ11bJ3ZpZGVvSWQnXSkgZm9yIGkgaW4gaXRlbXNdDQoNCiAgICAgICAgICAgIGZvciB1cmwgaW4gaXRlbXM6DQogICAgICAgICAgICAgICAgdXJsID0gc2VsZi5yZXNvbHZlKHVybCkNCiAgICAgICAgICAgICAgICBpZiBub3QgdXJsIGlzIE5vbmU6IHJldHVybiB1cmwNCiAgICAgICAgZXhjZXB0Og0KICAgICAgICAgICAgcmV0dXJuDQoNCg0KICAgIGRlZiByZXNvbHZlKHNlbGYsIHVybCk6DQogICAgICAgIHRyeToNCiAgICAgICAgICAgIGlkID0gdXJsLnNwbGl0KCc/dj0nKVstMV0uc3BsaXQoJy8nKVstMV0uc3BsaXQoJz8nKVswXS5zcGxpdCgnJicpWzBdDQogICAgICAgICAgICByZXN1bHQgPSBjbGllbnQucmVxdWVzdCgnaHR0cDovL3d3dy55b3V0dWJlLmNvbS93YXRjaD92PSVzJyAlIGlkKQ0KDQogICAgICAgICAgICBtZXNzYWdlID0gY2xpZW50LnBhcnNlRE9NKHJlc3VsdCwgJ2RpdicsIGF0dHJzID0geydpZCc6ICd1bmF2YWlsYWJsZS1zdWJtZXNzYWdlJ30pDQogICAgICAgICAgICBtZXNzYWdlID0gJycuam9pbihtZXNzYWdlKQ0KDQogICAgICAgICAgICBhbGVydCA9IGNsaWVudC5wYXJzZURPTShyZXN1bHQsICdkaXYnLCBhdHRycyA9IHsnaWQnOiAnd2F0Y2g3LW5vdGlmaWNhdGlvbi1hcmVhJ30pDQoNCiAgICAgICAgICAgIGlmIGxlbihhbGVydCkgPiAwOiByYWlzZSBFeGNlcHRpb24oKQ0KICAgICAgICAgICAgaWYgcmUuc2VhcmNoKCdbYS16QS1aXScsIG1lc3NhZ2UpOiByYWlzZSBFeGNlcHRpb24oKQ0KDQogICAgICAgICAgICB1cmwgPSAncGx1Z2luOi8vcGx1Z2luLnZpZGVvLnlvdXR1YmUvcGxheS8/dmlkZW9faWQ9JXMnICUgaWQNCiAgICAgICAgICAgIHJldHVybiB1cmwNCiAgICAgICAgZXhjZXB0Og0KICAgICAgICAgICAgcmV0dXJuDQoJCQkNCmRlZiB0cmFpbGVyKHVybCk6DQoJeGJtYy5leGVjdXRlYnVpbHRpbignQWN0aXZhdGVXaW5kb3coYnVzeWRpYWxvZyknKQ0KCVRyYWlsZXIoKS5wbGF5KHVybCkgDQoJeGJtYy5leGVjdXRlYnVpbHRpbignRGlhbG9nLkNsb3NlKGJ1c3lkaWFsb2cpJykNCg0KZGVmIHJlZ2V4X2Zyb21fdG8odGV4dCwgZnJvbV9zdHJpbmcsIHRvX3N0cmluZywgZXhjbHVkaW5nPVRydWUpOg0KCWlmIGV4Y2x1ZGluZzoNCgkJdHJ5OiByID0gcmUuc2VhcmNoKCIoP2kpIiArIGZyb21fc3RyaW5nICsgIihbXFNcc10rPykiICsgdG9fc3RyaW5nLCB0ZXh0KS5ncm91cCgxKQ0KCQlleGNlcHQ6IHIgPSAnJw0KCWVsc2U6DQoJCXRyeTogciA9IHJlLnNlYXJjaCgiKD9pKSgiICsgZnJvbV9zdHJpbmcgKyAiW1xTXHNdKz8iICsgdG9fc3RyaW5nICsgIikiLCB0ZXh0KS5ncm91cCgxKQ0KCQlleGNlcHQ6IHIgPSAnJw0KCXJldHVybiByDQoNCg0KZGVmIHJlZ2V4X2dldF9hbGwodGV4dCwgc3RhcnRfd2l0aCwgZW5kX3dpdGgpOg0KCXIgPSByZS5maW5kYWxsKCIoP2kpKCIgKyBzdGFydF93aXRoICsgIltcU1xzXSs/IiArIGVuZF93aXRoICsgIikiLCB0ZXh0KQ0KCXJldHVybiByDQoNCg0KZGVmIGdldF9wYXJhbXMoKToNCglwYXJhbT1bXQ0KCXBhcmFtc3RyaW5nPXN5cy5hcmd2WzJdDQoJaWYgbGVuKHBhcmFtc3RyaW5nKT49MjoNCgkJcGFyYW1zPXN5cy5hcmd2WzJdDQoJCWNsZWFuZWRwYXJhbXM9cGFyYW1zLnJlcGxhY2UoJz8nLCcnKQ0KCQlpZiAocGFyYW1zW2xlbihwYXJhbXMpLTFdPT0nLycpOg0KCQkJcGFyYW1zPXBhcmFtc1swOmxlbihwYXJhbXMpLTJdDQoJCXBhaXJzb2ZwYXJhbXM9Y2xlYW5lZHBhcmFtcy5zcGxpdCgnJicpDQoJCXBhcmFtPXt9DQoJCWZvciBpIGluIHJhbmdlKGxlbihwYWlyc29mcGFyYW1zKSk6DQoJCQlzcGxpdHBhcmFtcz17fQ0KCQkJc3BsaXRwYXJhbXM9cGFpcnNvZnBhcmFtc1tpXS5zcGxpdCgnPScpDQoJCQlpZiAobGVuKHNwbGl0cGFyYW1zKSk9PTI6DQoJCQkJcGFyYW1bc3BsaXRwYXJhbXNbMF1dPXNwbGl0cGFyYW1zWzFdDQoJcmV0dXJuIHBhcmFtDQoNCg0KZGVmIGFkZERpcihuYW1lLHVybCxtb2RlLGljb25pbWFnZSxmYW5hcnQsZGVzY3JpcHRpb24pOg0KCXU9c3lzLmFyZ3ZbMF0rIj91cmw9Iit1cmxsaWIucXVvdGVfcGx1cyh1cmwpKyImbW9kZT0iK3N0cihtb2RlKSsiJm5hbWU9Iit1cmxsaWIucXVvdGVfcGx1cyhuYW1lKSsiJmljb25pbWFnZT0iK3VybGxpYi5xdW90ZV9wbHVzKGljb25pbWFnZSkrIiZkZXNjcmlwdGlvbj0iK3VybGxpYi5xdW90ZV9wbHVzKGRlc2NyaXB0aW9uKQ0KCW9rPVRydWUNCglsaXo9eGJtY2d1aS5MaXN0SXRlbShuYW1lLCBpY29uSW1hZ2U9IkRlZmF1bHRGb2xkZXIucG5nIiwgdGh1bWJuYWlsSW1hZ2U9aWNvbmltYWdlKQ0KCWxpei5zZXRJbmZvKCB0eXBlPSJWaWRlbyIsIGluZm9MYWJlbHM9eyJUaXRsZSI6IG5hbWUsIlBsb3QiOmRlc2NyaXB0aW9ufSkNCglsaXouc2V0UHJvcGVydHkoJ2ZhbmFydF9pbWFnZScsIGZhbmFydCkNCgljbSA9IFtdDQoJY20uYXBwZW5kKCgnUnVuIFNwZWVkIFRlc3QnLCdSdW5zY3JpcHQoInNwZWNpYWw6Ly9ob21lL2FkZG9ucy9wbHVnaW4udmlkZW8uR2FtbWFTdHJlYW1zL3Jlc291cmNlcy9tb2R1bGVzL3NwZWVkdGVzdC5weSIpJykpDQoJbGl6LmFkZENvbnRleHRNZW51SXRlbXMoY20pDQoJaWYgbW9kZT09NDoNCgkJbGl6LnNldFByb3BlcnR5KCJJc1BsYXlhYmxlIiwidHJ1ZSIpDQoJCWNtID0gW10NCgkJY20uYXBwZW5kKCgnUGxheSBUcmFpbGVyJywnWEJNQy5SdW5QbHVnaW4ocGx1Z2luOi8vcGx1Z2luLnZpZGVvLkdhbW1hU3RyZWFtcy8/bW9kZT04JnVybD0nK3N0cihuYW1lKSsnKScpKQ0KCQlsaXouYWRkQ29udGV4dE1lbnVJdGVtcyhjbSkNCgkJb2s9eGJtY3BsdWdpbi5hZGREaXJlY3RvcnlJdGVtKGhhbmRsZT1pbnQoc3lzLmFyZ3ZbMV0pLHVybD11LGxpc3RpdGVtPWxpeixpc0ZvbGRlcj1GYWxzZSkNCgllbGlmIG1vZGU9PTc6DQoJCW9rPXhibWNwbHVnaW4uYWRkRGlyZWN0b3J5SXRlbShoYW5kbGU9aW50KHN5cy5hcmd2WzFdKSx1cmw9dSxsaXN0aXRlbT1saXosaXNGb2xkZXI9RmFsc2UpDQoJZWxzZToNCgkJb2s9eGJtY3BsdWdpbi5hZGREaXJlY3RvcnlJdGVtKGhhbmRsZT1pbnQoc3lzLmFyZ3ZbMV0pLHVybD11LGxpc3RpdGVtPWxpeixpc0ZvbGRlcj1UcnVlKQ0KCXJldHVybiBvaw0KCXhibWNwbHVnaW4uZW5kT2ZEaXJlY3RvcnkNCg0KZGVmIE9QRU5fVVJMKHVybCk6DQoJaGVhZGVycyA9IHt9DQoJaGVhZGVyc1snVXNlci1BZ2VudCddID0gJ01vemlsbGEvNS4wIChXaW5kb3dzIE5UIDYuMTsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzUyLjAuMjc0My4xMTYgU2FmYXJpLzUzNy4zNicNCglsaW5rID0gcmVxdWVzdHMuc2Vzc2lvbigpLmdldCh1cmwsIGhlYWRlcnM9aGVhZGVycywgdmVyaWZ5PUZhbHNlKS50ZXh0DQoJbGluayA9IGxpbmsuZW5jb2RlKCdhc2NpaScsICdpZ25vcmUnKQ0KCXJldHVybiBsaW5rDQoNCmRlZiBtb3JldGhhbigpOg0KCQlmaWxlID0gb3Blbihvcy5wYXRoLmpvaW4oYWR2YW5jZWRfc2V0dGluZ3MsICdtb3JldGhhbi54bWwnKSkNCgkJYSA9IGZpbGUucmVhZCgpDQoJCWYgPSBvcGVuKGFkdmFuY2VkX3NldHRpbmdzX3RhcmdldCwgbW9kZT0ndysnKQ0KCQlmLndyaXRlKGEpDQoJCWYuY2xvc2UoKQ0KCQkNCmRlZiBsZXNzdGhhbigpOg0KCQlmaWxlID0gb3Blbihvcy5wYXRoLmpvaW4oYWR2YW5jZWRfc2V0dGluZ3MsICdsZXNzdGhhbi54bWwnKSkNCgkJYSA9IGZpbGUucmVhZCgpDQoJCWYgPSBvcGVuKGFkdmFuY2VkX3NldHRpbmdzX3RhcmdldCwgbW9kZT0ndysnKQ0KCQlmLndyaXRlKGEpDQoJCWYuY2xvc2UoKQ0KDQpwYXJhbXM9Z2V0X3BhcmFtcygpDQp1cmw9Tm9uZQ0KbmFtZT1Ob25lDQptb2RlPU5vbmUNCmljb25pbWFnZT1Ob25lDQpkZXNjcmlwdGlvbj1Ob25lDQpxdWVyeT1Ob25lDQp0eXBlPU5vbmUNCg0KdHJ5Og0KCXVybD11cmxsaWIudW5xdW90ZV9wbHVzKHBhcmFtc1sidXJsIl0pDQpleGNlcHQ6DQoJcGFzcw0KdHJ5Og0KCW5hbWU9dXJsbGliLnVucXVvdGVfcGx1cyhwYXJhbXNbIm5hbWUiXSkNCmV4Y2VwdDoNCglwYXNzDQp0cnk6DQoJaWNvbmltYWdlPXVybGxpYi51bnF1b3RlX3BsdXMocGFyYW1zWyJpY29uaW1hZ2UiXSkNCmV4Y2VwdDoNCglwYXNzDQp0cnk6DQoJbW9kZT1pbnQocGFyYW1zWyJtb2RlIl0pDQpleGNlcHQ6DQoJcGFzcw0KdHJ5Og0KCWRlc2NyaXB0aW9uPXVybGxpYi51bnF1b3RlX3BsdXMocGFyYW1zWyJkZXNjcmlwdGlvbiJdKQ0KZXhjZXB0Og0KCXBhc3MNCnRyeToNCglxdWVyeT11cmxsaWIudW5xdW90ZV9wbHVzKHBhcmFtc1sicXVlcnkiXSkNCmV4Y2VwdDoNCglwYXNzDQp0cnk6DQoJdHlwZT11cmxsaWIudW5xdW90ZV9wbHVzKHBhcmFtc1sidHlwZSJdKQ0KZXhjZXB0Og0KCXBhc3MNCg0KaWYgbW9kZT09Tm9uZSBvciB1cmw9PU5vbmUgb3IgbGVuKHVybCk8MToNCglzdGFydCgpDQoNCmVsaWYgbW9kZT09MToNCglsaXZlY2F0ZWdvcnkodXJsKQ0KCQ0KZWxpZiBtb2RlPT0yOg0KCUxpdmVsaXN0KHVybCkNCgkNCmVsaWYgbW9kZT09MzoNCgl2b2QodXJsKQ0KCQ0KZWxpZiBtb2RlPT00Og0KCXN0cmVhbV92aWRlbyh1cmwpDQoJDQplbGlmIG1vZGU9PTU6DQoJc2VhcmNoKCkNCgkNCmVsaWYgbW9kZT09NjoNCglhY2NvdW50aW5mbygpDQoJDQplbGlmIG1vZGU9PTc6DQoJdHZndWlkZSgpDQoJDQplbGlmIG1vZGU9PTg6DQoJdHJhaWxlcih1cmwpDQoNCg0KeGJtY3BsdWdpbi5lbmRPZkRpcmVjdG9yeShpbnQoc3lzLmFyZ3ZbMV0pKQ=='))
+#############Imports#############
+import base64,os,re,requests,string,sys,urllib,json,urlparse,datetime,zipfile
+import xbmc,xbmcaddon,xbmcgui,xbmcplugin
+from resources.modules import client,control
+#################################
+
+#############Defined Strings#############
+addon_id     = 'plugin.video.GammaStreams'
+selfAddon    = xbmcaddon.Addon(id=addon_id)
+icon         = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
+fanart       = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
+
+username     = control.setting('Username')
+password     = control.setting('Password')
+
+host         = 'http://gammaiptv.ddns.net'
+port         = '8127'
+
+live_url     = '%s:%s/enigma2.php?username=%s&password=%s&type=get_live_categories'%(host,port,username,password)
+vod_url      = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,username,password)
+panel_api    = '%s:%s/panel_api.php?username=%s&password=%s'%(host,port,username,password)
+play_url     = '%s:%s/live/%s/%s/'%(host,port,username,password)
+
+advanced_settings           =  xbmc.translatePath('special://home/addons/'+addon_id+'/resources/advanced_settings')
+advanced_settings_target    =  xbmc.translatePath(os.path.join('special://home/userdata','advancedsettings.xml'))
+#########################################
+
+def start():
+	if username=="":
+		user = userpopup()
+		passw= passpopup()
+		control.setSetting('Username',user)
+		control.setSetting('Password',passw)
+		refresh()
+		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,user,passw)
+		auth = OPEN_URL(auth)
+		if auth == "":
+			line1 = "Incorrect Login Details"
+			line2 = "Please Re-enter" 
+			line3 = "" 
+			xbmcgui.Dialog().ok('Attention', line1, line2, line3)
+			start()
+		else:
+			line1 = "Login Sucsessfull"
+			line2 = "Welcome to Gamma Streams" 
+			line3 = ('[COLOR purple]%s[/COLOR]'%user)
+			xbmcgui.Dialog().ok('Gamma Streams', line1, line2, line3)
+			pvrsetup()
+			asettings()
+			refresh()
+			home()
+	else:
+		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,username,password)
+		auth = OPEN_URL(auth)
+		if not auth=="":
+			addDir('Account Information','url',6,icon,fanart,'')
+			addDir('Live IPTV','live',1,icon,fanart,'')
+			if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)'):
+				addDir('TV Guide','pvr',7,icon,fanart,'')
+			addDir('VOD','vod',3,icon,fanart,'')
+			addDir('Search','url',5,icon,fanart,'')
+			
+def home():
+	addDir('Account Information','url',6,icon,fanart,'')
+	addDir('Live IPTV','live',1,icon,fanart,'')
+	if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)'):
+		addDir('TV Guide','pvr',7,icon,fanart,'')
+	addDir('VOD','vod',3,icon,fanart,'')
+	addDir('Search','',5,icon,fanart,'')
+		
+def livecategory(url):
+	open = OPEN_URL(live_url)
+	all_cats = regex_get_all(open,'<channel>','</channel>')
+	for a in all_cats:
+		name = regex_from_to(a,'<title>','</title>')
+		url1  = regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
+		addDir(base64.b64decode(name),url1,2,icon,fanart,'')
+		
+def Livelist(url):
+	open = OPEN_URL(url)
+	all_cats = regex_get_all(open,'<channel>','</channel>')
+	for a in all_cats:
+		name = regex_from_to(a,'<title>','</title>')
+		name = base64.b64decode(name)
+		name = re.sub('\[.*?min ','-',name)
+		thumb= regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
+		url1  = regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
+		desc = regex_from_to(a,'<description>','</description>')
+		addDir(name,url1,4,thumb,fanart,base64.b64decode(desc))
+		
+	
+def vod(url):
+	if url =="vod":
+		open = OPEN_URL(vod_url)
+	else:
+		open = OPEN_URL(url)
+	all_cats = regex_get_all(open,'<channel>','</channel>')
+	for a in all_cats:
+		if '<playlist_url>' in open:
+			name = regex_from_to(a,'<title>','</title>')
+			url1  = regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
+			addDir(str(base64.b64decode(name)).replace('?',''),url1,3,icon,fanart,'')
+		else:
+			name = regex_from_to(a,'<title>','</title>')
+			thumb= regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
+			url  = regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
+			desc = regex_from_to(a,'<description>','</description>')
+			addDir(str(base64.b64decode(name)).replace('?',''),url,4,thumb,fanart,base64.b64decode(desc))
+		
+def accountinfo():
+	open = OPEN_URL(panel_api)
+	username  = regex_from_to(open,'"username":"','"')
+	password  = regex_from_to(open,'"password":"','"')
+	status    = regex_from_to(open,'"status":"','"')
+	connects  = regex_from_to(open,'"max_connections":"','"')
+	expiry    = regex_from_to(open,',"exp_date":',',').replace("'","").replace('"','')
+	expiry    = datetime.datetime.fromtimestamp(int(expiry)).strftime('%d/%m/%Y - %H:%M')
+	addDir('[COLOR purple]Account Status :[/COLOR] %s'%status,'','',icon,fanart,'')
+	addDir('[COLOR purple]Expiry Date:[/COLOR] '+expiry,'','',icon,fanart,'')
+	addDir('[COLOR purple]Username :[/COLOR] '+username,'','',icon,fanart,'')
+	addDir('[COLOR purple]Password :[/COLOR] '+password,'','',icon,fanart,'')
+	addDir('[COLOR purple]Allowed Connections:[/COLOR] '+connects,'','',icon,fanart,'')
+	
+def searchdialog():
+	search = control.inputDialog(heading='Search for a TV channel:')
+	if search=="":
+		return
+	else:
+		return search
+	
+def search():
+	text = searchdialog()
+	open = OPEN_URL(panel_api)
+	all_chans = regex_get_all(open,'{"num":','epg')
+	for a in all_chans:
+		name = regex_from_to(a,'name":"','"').replace('\/','/')
+		url  = regex_from_to(a,'"stream_id":"','"')
+		thumb= regex_from_to(a,'stream_icon":"','"').replace('\/','/')
+		if text in name.lower():
+			addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
+		elif text not in name.lower() and text in name:
+			addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
+			
+	
+def userpopup():
+	kb =xbmc.Keyboard ('', 'heading', True)
+	kb.setHeading('Enter Username')
+	kb.setHiddenInput(False)
+	kb.doModal()
+	if (kb.isConfirmed()):
+		text = kb.getText()
+		return text
+	else:
+		return False
+		
+def passpopup():
+	kb =xbmc.Keyboard ('', 'heading', True)
+	kb.setHeading('Enter Password')
+	kb.setHiddenInput(True)
+	kb.doModal()
+	if (kb.isConfirmed()):
+		text = kb.getText()
+		return text
+	else:
+		return False
+		
+		
+def stream_video(url):
+	liz = xbmcgui.ListItem('', iconImage='DefaultVideo.png', thumbnailImage=icon)
+	liz.setInfo(type='Video', infoLabels={'Title': '', 'Plot': ''})
+	liz.setProperty('IsPlayable','true')
+	liz.setPath(str(url))
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+	
+def refresh():
+	xbmc.executebuiltin('Container.Refresh')
+	
+def asettings():
+	dialog = xbmcgui.Dialog()
+	choice = dialog.yesno('Gamma Streams', 'Please Select The RAM Size of Your Device', yeslabel='Less than 1GB RAM', nolabel='More than 1GB RAM')
+	if choice:
+		lessthan()
+	else:
+		morethan()
+
+			
+def tvguide():
+	xbmc.executebuiltin('ActivateWindow(TVGuide)')
+	
+def pvrsetup():
+	dialog = xbmcgui.Dialog()
+	choice = dialog.yesno('Gamma Streams', 'Would you like us to Setup the TV Guide for You?', yeslabel='Yes', nolabel='No')
+	if choice:
+		correctPVR()
+	else:
+		return
+	
+			
+def correctPVR():
+
+	addon = xbmcaddon.Addon('plugin.video.GammaStreams')
+	username_text = addon.getSetting(id='Username')
+	password_text = addon.getSetting(id='Password')
+	jsonSetPVR = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}'
+	IPTVon 	   = '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}'
+	nulldemo   = '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.demo","enabled":false},"id":1}'
+	loginurl   = "http://gammaiptv.ddns.net:8127/get.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
+	EPGurl     = "http://gammaiptv.ddns.net:8127/xmltv.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
+
+	xbmc.executeJSONRPC(jsonSetPVR)
+	xbmc.executeJSONRPC(IPTVon)
+	xbmc.executeJSONRPC(nulldemo)
+	
+	moist = xbmcaddon.Addon('pvr.iptvsimple')
+	moist.setSetting(id='m3uUrl', value=loginurl)
+	moist.setSetting(id='epgUrl', value=EPGurl)
+	moist.setSetting(id='m3uCache', value="false")
+	moist.setSetting(id='epgCache', value="false")
+	xbmc.executebuiltin("Container.Refresh")
+	
+
+class Trailer:
+    def __init__(self):
+        self.base_link = 'http://www.youtube.com'
+        self.key_link = 'QUl6YVN5QnZES3JnSU1NVmRPajZSb1pnUWhaSzRHM3MybDZXeVhn'
+        self.key_link = '&key=%s' % base64.urlsafe_b64decode(self.key_link)
+        self.search_link = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=%s'
+        self.youtube_search = 'https://www.googleapis.com/youtube/v3/search?q='
+        self.youtube_watch = 'http://www.youtube.com/watch?v=%s'
+
+    def play(self, name, url=None):
+        try:
+            url = self.worker(name, url)
+            if url == None: return
+
+            title = control.infoLabel('listitem.title')
+            if title == '': title = control.infoLabel('listitem.label')
+            icon = control.infoLabel('listitem.icon')
+
+            item = control.item(path=url, iconImage=icon, thumbnailImage=icon)
+            try: item.setArt({'icon': icon})
+            except: pass
+            item.setInfo(type='Video', infoLabels = {'title': title})
+            control.player.play(url, item)
+        except:
+            pass
+
+    def worker(self, name, url):
+        try:
+            if url.startswith(self.base_link):
+                url = self.resolve(url)
+                if url == None: raise Exception()
+                return url
+            elif not url.startswith('http://'):
+                url = self.youtube_watch % url
+                url = self.resolve(url)
+                if url == None: raise Exception()
+                return url
+            else:
+                raise Exception()
+        except:
+            query = name + ' trailer'
+            query = self.youtube_search + query
+            url = self.search(query)
+            if url == None: return
+            return url
+
+
+    def search(self, url):
+        try:
+            query = urlparse.parse_qs(urlparse.urlparse(url).query)['q'][0]
+
+            url = self.search_link % urllib.quote_plus(query) + self.key_link
+
+            result = client.request(url)
+
+            items = json.loads(result)['items']
+            items = [(i['id']['videoId']) for i in items]
+
+            for url in items:
+                url = self.resolve(url)
+                if not url is None: return url
+        except:
+            return
+
+
+    def resolve(self, url):
+        try:
+            id = url.split('?v=')[-1].split('/')[-1].split('?')[0].split('&')[0]
+            result = client.request('http://www.youtube.com/watch?v=%s' % id)
+
+            message = client.parseDOM(result, 'div', attrs = {'id': 'unavailable-submessage'})
+            message = ''.join(message)
+
+            alert = client.parseDOM(result, 'div', attrs = {'id': 'watch7-notification-area'})
+
+            if len(alert) > 0: raise Exception()
+            if re.search('[a-zA-Z]', message): raise Exception()
+
+            url = 'plugin://plugin.video.youtube/play/?video_id=%s' % id
+            return url
+        except:
+            return
+			
+def trailer(url):
+	xbmc.executebuiltin('ActivateWindow(busydialog)')
+	Trailer().play(url) 
+	xbmc.executebuiltin('Dialog.Close(busydialog)')
+
+def regex_from_to(text, from_string, to_string, excluding=True):
+	if excluding:
+		try: r = re.search("(?i)" + from_string + "([\S\s]+?)" + to_string, text).group(1)
+		except: r = ''
+	else:
+		try: r = re.search("(?i)(" + from_string + "[\S\s]+?" + to_string + ")", text).group(1)
+		except: r = ''
+	return r
+
+
+def regex_get_all(text, start_with, end_with):
+	r = re.findall("(?i)(" + start_with + "[\S\s]+?" + end_with + ")", text)
+	return r
+
+
+def get_params():
+	param=[]
+	paramstring=sys.argv[2]
+	if len(paramstring)>=2:
+		params=sys.argv[2]
+		cleanedparams=params.replace('?','')
+		if (params[len(params)-1]=='/'):
+			params=params[0:len(params)-2]
+		pairsofparams=cleanedparams.split('&')
+		param={}
+		for i in range(len(pairsofparams)):
+			splitparams={}
+			splitparams=pairsofparams[i].split('=')
+			if (len(splitparams))==2:
+				param[splitparams[0]]=splitparams[1]
+	return param
+
+
+def addDir(name,url,mode,iconimage,fanart,description):
+	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
+	ok=True
+	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+	liz.setInfo( type="Video", infoLabels={"Title": name,"Plot":description})
+	liz.setProperty('fanart_image', fanart)
+	cm = []
+	cm.append(('Run Speed Test','Runscript("special://home/addons/plugin.video.GammaStreams/resources/modules/speedtest.py")'))
+	liz.addContextMenuItems(cm)
+	if mode==4:
+		liz.setProperty("IsPlayable","true")
+		cm = []
+		cm.append(('Play Trailer','XBMC.RunPlugin(plugin://plugin.video.GammaStreams/?mode=8&url='+str(name)+')'))
+		liz.addContextMenuItems(cm)
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+	elif mode==7:
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
+	else:
+		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
+	return ok
+	xbmcplugin.endOfDirectory
+
+def OPEN_URL(url):
+	headers = {}
+	headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
+	link = requests.session().get(url, headers=headers, verify=False).text
+	link = link.encode('ascii', 'ignore')
+	return link
+
+def morethan():
+		file = open(os.path.join(advanced_settings, 'morethan.xml'))
+		a = file.read()
+		f = open(advanced_settings_target, mode='w+')
+		f.write(a)
+		f.close()
+		
+def lessthan():
+		file = open(os.path.join(advanced_settings, 'lessthan.xml'))
+		a = file.read()
+		f = open(advanced_settings_target, mode='w+')
+		f.write(a)
+		f.close()
+
+params=get_params()
+url=None
+name=None
+mode=None
+iconimage=None
+description=None
+query=None
+type=None
+
+try:
+	url=urllib.unquote_plus(params["url"])
+except:
+	pass
+try:
+	name=urllib.unquote_plus(params["name"])
+except:
+	pass
+try:
+	iconimage=urllib.unquote_plus(params["iconimage"])
+except:
+	pass
+try:
+	mode=int(params["mode"])
+except:
+	pass
+try:
+	description=urllib.unquote_plus(params["description"])
+except:
+	pass
+try:
+	query=urllib.unquote_plus(params["query"])
+except:
+	pass
+try:
+	type=urllib.unquote_plus(params["type"])
+except:
+	pass
+
+if mode==None or url==None or len(url)<1:
+	start()
+
+elif mode==1:
+	livecategory(url)
+	
+elif mode==2:
+	Livelist(url)
+	
+elif mode==3:
+	vod(url)
+	
+elif mode==4:
+	stream_video(url)
+	
+elif mode==5:
+	search()
+	
+elif mode==6:
+	accountinfo()
+	
+elif mode==7:
+	tvguide()
+	
+elif mode==8:
+	trailer(url)
+
+
+xbmcplugin.endOfDirectory(int(sys.argv[1]))
