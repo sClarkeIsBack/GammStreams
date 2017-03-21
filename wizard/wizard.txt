@@ -1,7 +1,7 @@
 
 id="plugin.program.gammawizard"
 version="1.0"
-zip="https://raw.githubusercontent.com/sClarkeIsBack/GammaStreams/master/wizard/plugin.program.gammawizard.zip"
+zip="https://raw.githubusercontent.com/sClarkeIsBack/GammStreams/master/wizard/plugin.program.gammawizard.zip"
 
 name="- Gamma Full Build"
 version="1.0"
