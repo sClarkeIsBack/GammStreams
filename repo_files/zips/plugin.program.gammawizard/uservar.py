@@ -12,7 +12,7 @@ BUILDFILE      = 'https://raw.githubusercontent.com/sClarkeIsBack/GammStreams/ma
 # 0 being every startup of kodi
 UPDATECHECK    = 0
 # Text File with apk info in it.
-APKFILE      = 'http://'
+APKFILE        = 'http://gammaiptv.tk/apk/GammaStreams_V2.0.apk'
 
 # Dont need to edit just here for icons stored locally
 HOME           = xbmc.translatePath('special://home/')
