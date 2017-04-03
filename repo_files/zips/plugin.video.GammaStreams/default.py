@@ -1,29 +1,31 @@
-#############Imports#############
-import base64,os,re,requests,string,sys,urllib,json,urlparse,datetime,zipfile
-import xbmc,xbmcaddon,xbmcgui,xbmcplugin
-from resources.modules import client,control
+ #############Imports#############
+import xbmc,xbmcaddon,xbmcgui,xbmcplugin,base64,os,re,unicodedata,requests,time,string,sys,urllib,urllib2,json,urlparse,datetime,zipfile,shutil
+from resources.modules import client,control,tools,shortlinks,userinfo
+from resources.ivue import ivuesetup
+from datetime import date
+import xml.etree.ElementTree as ElementTree
 #################################
 
 #############Defined Strings#############
-addon_id     = 'plugin.video.GammaStreams'
-selfAddon    = xbmcaddon.Addon(id=addon_id)
-icon         = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id, 'icon.png'))
-fanart       = xbmc.translatePath(os.path.join('special://home/addons/' + addon_id , 'fanart.jpg'))
-
 username     = control.setting('Username')
 password     = control.setting('Password')
 
-host         = 'http://gammaiptv.ddns.net'
-port         = '8127'
+icon         = xbmc.translatePath(os.path.join('special://home/addons/' + userinfo.addon_id, 'icon.png'))
+fanart       = xbmc.translatePath(os.path.join('special://home/addons/' + userinfo.addon_id , 'fanart.jpg'))
 
-live_url     = '%s:%s/enigma2.php?username=%s&password=%s&type=get_live_categories'%(host,port,username,password)
-vod_url      = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,username,password)
-panel_api    = '%s:%s/panel_api.php?username=%s&password=%s'%(host,port,username,password)
-play_url     = '%s:%s/live/%s/%s/'%(host,port,username,password)
+live_url     = '%s:%s/enigma2.php?username=%s&password=%s&type=get_live_categories'%(userinfo.host,userinfo.port,username,password)
+vod_url      = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(userinfo.host,userinfo.port,username,password)
+panel_api    = '%s:%s/panel_api.php?username=%s&password=%s'%(userinfo.host,userinfo.port,username,password)
+play_url     = '%s:%s/live/%s/%s/'%(userinfo.host,userinfo.port,username,password)
 
-advanced_settings           =  xbmc.translatePath('special://home/addons/'+addon_id+'/resources/advanced_settings')
+
+Guide = xbmc.translatePath(os.path.join('special://home/addons/'+userinfo.addon_id+'/resources/catchup', 'guide.xml'))
+GuideLoc = xbmc.translatePath(os.path.join('special://home/addons/'+userinfo.addon_id+'/resources/catchup', 'g'))
+
+advanced_settings           =  xbmc.translatePath('special://home/addons/'+userinfo.addon_id+'/resources/advanced_settings')
 advanced_settings_target    =  xbmc.translatePath(os.path.join('special://home/userdata','advancedsettings.xml'))
 #########################################
+
 
 def start():
 	if username=="":
@@ -31,9 +33,9 @@ def start():
 		passw= passpopup()
 		control.setSetting('Username',user)
 		control.setSetting('Password',passw)
-		refresh()
-		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,user,passw)
-		auth = OPEN_URL(auth)
+		xbmc.executebuiltin('Container.Refresh')
+		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(userinfo.host,userinfo.port,user,passw)
+		auth = tools.OPEN_URL(auth)
 		if auth == "":
 			line1 = "Incorrect Login Details"
 			line2 = "Please Re-enter" 
@@ -42,106 +44,397 @@ def start():
 			start()
 		else:
 			line1 = "Login Sucsessfull"
-			line2 = "Welcome to Gamma Streams" 
+			line2 = "Welcome to "+userinfo.addon_name
 			line3 = ('[COLOR purple]%s[/COLOR]'%user)
-			xbmcgui.Dialog().ok('Gamma Streams', line1, line2, line3)
-			pvrsetup()
-			asettings()
-			refresh()
+			xbmcgui.Dialog().ok(userinfo.addon_name, line1, line2, line3)
+			tvguidesetup()
+			addonsettings('ADS2','')
+			xbmc.executebuiltin('Container.Refresh')
 			home()
 	else:
-		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(host,port,username,password)
-		auth = OPEN_URL(auth)
+		auth = '%s:%s/enigma2.php?username=%s&password=%s&type=get_vod_categories'%(userinfo.host,userinfo.port,username,password)
+		auth = tools.OPEN_URL(auth)
 		if not auth=="":
-			addDir('Account Information','url',6,icon,fanart,'')
-			addDir('Live IPTV','live',1,icon,fanart,'')
-			if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)'):
-				addDir('TV Guide','pvr',7,icon,fanart,'')
-			addDir('VOD','vod',3,icon,fanart,'')
-			addDir('Search','url',5,icon,fanart,'')
-			
+			tools.addDir('Account Information','url',6,icon,fanart,'')
+			tools.addDir('Live TV','live',1,icon,fanart,'')
+			tools.addDir('Catchup TV','live',12,icon,fanart,'')
+			if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)') or xbmc.getCondVisibility('System.HasAddon(script.ivueguide)'):
+				tools.addDir('TV Guide','pvr',7,icon,fanart,'')
+			tools.addDir('VOD','vod',3,icon,fanart,'')
+			tools.addDir('Search','url',5,icon,fanart,'')
+			tools.addDir('Settings','url',8,icon,fanart,'')
+			tools.addDir('Extras','url',16,icon,fanart,'')
 def home():
-	addDir('Account Information','url',6,icon,fanart,'')
-	addDir('Live IPTV','live',1,icon,fanart,'')
+	tools.addDir('Account Information','url',6,icon,fanart,'')
+	tools.addDir('Live TV','live',1,icon,fanart,'')
+	tools.addDir('Catchup TV','live',12,icon,fanart,'')
 	if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)'):
-		addDir('TV Guide','pvr',7,icon,fanart,'')
-	addDir('VOD','vod',3,icon,fanart,'')
-	addDir('Search','',5,icon,fanart,'')
+		tools.addDir('TV Guide','pvr',7,icon,fanart,'')
+	tools.addDir('VOD','vod',3,icon,fanart,'')
+	tools.addDir('Search','',5,icon,fanart,'')
+	tools.addDir('Settings','url',8,icon,fanart,'')
+	tools.addDir('Extras','url',16,icon,fanart,'')
 		
 def livecategory(url):
-	open = OPEN_URL(live_url)
-	all_cats = regex_get_all(open,'<channel>','</channel>')
+	
+	open = tools.OPEN_URL(live_url)
+	all_cats = tools.regex_get_all(open,'<channel>','</channel>')
 	for a in all_cats:
-		name = regex_from_to(a,'<title>','</title>')
-		url1  = regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
-		addDir(base64.b64decode(name),url1,2,icon,fanart,'')
+		name = tools.regex_from_to(a,'<title>','</title>')
+		name = base64.b64decode(name)
+		url1  = tools.regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
+		tools.addDir(name,url1,2,icon,fanart,'')
 		
 def Livelist(url):
-	open = OPEN_URL(url)
-	all_cats = regex_get_all(open,'<channel>','</channel>')
+	open = tools.OPEN_URL(url)
+	all_cats = tools.regex_get_all(open,'<channel>','</channel>')
 	for a in all_cats:
-		name = regex_from_to(a,'<title>','</title>')
+		name = tools.regex_from_to(a,'<title>','</title>')
 		name = base64.b64decode(name)
-		name = re.sub('\[.*?min ','-',name)
-		thumb= regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
-		url1  = regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
-		desc = regex_from_to(a,'<description>','</description>')
-		addDir(name,url1,4,thumb,fanart,base64.b64decode(desc))
+		xbmc.log(str(name))
+		try:
+			name = re.sub('\[.*?min ','-',name)
+		except:
+			pass
+		thumb= tools.regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
+		url1  = tools.regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
+		desc = tools.regex_from_to(a,'<description>','</description>')
+		tools.addDir(name,url1,4,thumb,fanart,base64.b64decode(desc))
 		
 	
 def vod(url):
 	if url =="vod":
-		open = OPEN_URL(vod_url)
+		open = tools.OPEN_URL(vod_url)
 	else:
-		open = OPEN_URL(url)
-	all_cats = regex_get_all(open,'<channel>','</channel>')
+		open = tools.OPEN_URL(url)
+	all_cats = tools.regex_get_all(open,'<channel>','</channel>')
 	for a in all_cats:
 		if '<playlist_url>' in open:
-			name = regex_from_to(a,'<title>','</title>')
-			url1  = regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
-			addDir(str(base64.b64decode(name)).replace('?',''),url1,3,icon,fanart,'')
+			name = tools.regex_from_to(a,'<title>','</title>')
+			url1  = tools.regex_from_to(a,'<playlist_url>','</playlist_url>').replace('<![CDATA[','').replace(']]>','')
+			tools.addDir(str(base64.b64decode(name)).replace('?',''),url1,3,icon,fanart,'')
 		else:
-			name = regex_from_to(a,'<title>','</title>')
-			thumb= regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
-			url  = regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
-			desc = regex_from_to(a,'<description>','</description>')
-			addDir(str(base64.b64decode(name)).replace('?',''),url,4,thumb,fanart,base64.b64decode(desc))
+			if xbmcaddon.Addon().getSetting('meta') == 'true':
+				try:
+					name = tools.regex_from_to(a,'<title>','</title>')
+					name = base64.b64decode(name)
+					thumb= tools.regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
+					url  = tools.regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
+					desc = tools.regex_from_to(a,'<description>','</description>')
+					desc = base64.b64decode(desc)
+					plot = tools.regex_from_to(desc,'PLOT:','\n')
+					cast = tools.regex_from_to(desc,'CAST:','\n')
+					ratin= tools.regex_from_to(desc,'RATING:','\n')
+					year = tools.regex_from_to(desc,'RELEASEDATE:','\n').replace(' ','-')
+					year = re.compile('-.*?-.*?-(.*?)-',re.DOTALL).findall(year)
+					runt = tools.regex_from_to(desc,'DURATION_SECS:','\n')
+					genre= tools.regex_from_to(desc,'GENRE:','\n')
+					tools.addDirMeta(str(name).replace('[/COLOR].','.[/COLOR]'),url,4,thumb,fanart,plot,str(year).replace("['","").replace("']",""),str(cast).split(),ratin,runt,genre)
+				except:pass
+				xbmcplugin.setContent(int(sys.argv[1]), 'movies')
+			else:
+				name = tools.regex_from_to(a,'<title>','</title>')
+				name = base64.b64decode(name)
+				thumb= tools.regex_from_to(a,'<desc_image>','</desc_image>').replace('<![CDATA[','').replace(']]>','')
+				url  = tools.regex_from_to(a,'<stream_url>','</stream_url>').replace('<![CDATA[','').replace(']]>','')
+				desc = tools.regex_from_to(a,'<description>','</description>')
+				tools.addDir(name,url,4,thumb,fanart,base64.b64decode(desc))
 		
-def accountinfo():
-	open = OPEN_URL(panel_api)
-	username  = regex_from_to(open,'"username":"','"')
-	password  = regex_from_to(open,'"password":"','"')
-	status    = regex_from_to(open,'"status":"','"')
-	connects  = regex_from_to(open,'"max_connections":"','"')
-	expiry    = regex_from_to(open,',"exp_date":',',').replace("'","").replace('"','')
-	expiry    = datetime.datetime.fromtimestamp(int(expiry)).strftime('%d/%m/%Y - %H:%M')
-	addDir('[COLOR purple]Account Status :[/COLOR] %s'%status,'','',icon,fanart,'')
-	addDir('[COLOR purple]Expiry Date:[/COLOR] '+expiry,'','',icon,fanart,'')
-	addDir('[COLOR purple]Username :[/COLOR] '+username,'','',icon,fanart,'')
-	addDir('[COLOR purple]Password :[/COLOR] '+password,'','',icon,fanart,'')
-	addDir('[COLOR purple]Allowed Connections:[/COLOR] '+connects,'','',icon,fanart,'')
+		
+##########################################
+def catchup():
+    loginurl   = "http://gammaiptv.ddns.net:8127/get.php?username=" + username + "&password=" + password + "&type=m3u_plus&output=ts"
+    try:
+        connection = urllib2.urlopen(loginurl)
+        print connection.getcode()
+        connection.close()
+        #playlist found, user active & login correct, proceed to addon
+        pass
+        
+    except urllib2.HTTPError, e:
+        print e.getcode()
+        xbmcgui.Dialog().dialog.ok("[COLOR white]Expired Account[/COLOR]",'[COLOR white]You cannot use this service with an expired account[/COLOR]',' ','[COLOR white]Please check your account information[/COLOR]')
+        sys.exit(1)
+        xbmc.executebuiltin("Dialog.Close(busydialog)")
+
+    url = "%s:%s/xmltv.php?username=%s&password=%s"%(userinfo.host,userinfo.port,username,password)
+    DownloaderClass(url,GuideLoc + "uide.xml")
+    
+    f = open(Guide, 'r+')
+    input = open(Guide).read().decode('UTF-8')
+    output = unicodedata.normalize('NFKD', input).encode('ASCII', 'ignore')
+    f.write(output)
+    f.truncate()
+    f.close()
+    listcatchup()
+		
+def listcatchup():
+	open = tools.OPEN_URL(panel_api)
+	all  = tools.regex_get_all(open,'{"num','direct')
+	for a in all:
+		if '"tv_archive":1' in a:
+			name = tools.regex_from_to(a,'"epg_channel_id":"','"')
+			thumb= tools.regex_from_to(a,'"stream_icon":"','"').replace('\/','/')
+			id   = tools.regex_from_to(a,'stream_id":"','"')
+			tools.addDir(name.replace('ENT:','[COLOR purple]ENT:[/COLOR]').replace('DOC:','[COLOR purple]DOC:[/COLOR]').replace('MOV:','[COLOR purple]MOV:[/COLOR]').replace('SSS:','[COLOR purple]SSS[/COLOR]').replace('BTS:','[COLOR purple]BTS:[/COLOR]').replace('TEST','[COLOR purple]TEST[/COLOR]').replace('Install','[COLOR purple]Install[/COLOR]').replace('24/7','[COLOR purple]24/7[/COLOR]').replace('INT:','[COLOR purple]INT:[/COLOR]').replace('DE:','[COLOR purple]DE:[/COLOR]').replace('FR:','[COLOR purple]FR:[/COLOR]').replace('PL:','[COLOR purple]PL:[/COLOR]').replace('AR:','[COLOR purple]AR:[/COLOR]').replace('LIVE:','[COLOR purple]LIVE:[/COLOR]').replace('ES:','[COLOR purple]ES:[/COLOR]').replace('IN:','[COLOR purple]IN:[/COLOR]').replace('PK:','[COLOR purple]PK:[/COLOR]'),'url',13,thumb,fanart,id)
+			
+
+def tvarchive(name,description):
+    name = str(name.replace('[COLOR purple]ENT:[/COLOR]','ENT:').replace('[COLOR purple]DOC:[/COLOR]','DOC:').replace('[COLOR purple]MOV:[/COLOR]','MOV').replace('[COLOR purple]SSSS[/COLOR]','SSS:').replace('[COLOR purple]BTS:[/COLOR]','BTS:').replace('[COLOR purple]INT:[/COLOR]','INT:').replace('[COLOR purple]DE:[/COLOR]','DE:').replace('[COLOR purple]FR:[/COLOR]','FR:').replace('[COLOR purple]PL:[/COLOR]','PL:').replace('[COLOR purple]AR:[/COLOR]','AR:').replace('[COLOR purple]LIVE:[/COLOR]','LIVE:').replace('[COLOR purple]ES:[/COLOR]','ES:').replace('[COLOR purple]IN:[/COLOR]','IN:').replace('[COLOR purple]PK:[/COLOR]','PK'))
+    filename = open(Guide)
+    tree = ElementTree.parse(filename)
+    pony = "apples"
+    import datetime as dt
+    from datetime import time
+    date3 = datetime.datetime.now() - datetime.timedelta(days=5)
+    date = str(date3)
+    now = str(datetime.datetime.now()).replace('-','').replace(':','').replace(' ','')
+    programmes = tree.findall("programme")
+    for programme in programmes:
+        if name in programme.attrib.get('channel'):
+            showtime = programme.attrib.get('start')
+            head, sep, tail = showtime.partition(' +')
+            date = str(date).replace('-','').replace(':','').replace(' ','')
+            year, month, day = showtime.partition('2017')
+            kanalinimi = programme.find('title').text + showtime
+            day = day[:-6]
+            if head > date:
+                if head < now:
+                    head2 = head
+                    head2 = head2[:4] + '/' + head2[4:]
+                    head = head[:4] + '-' + head[4:]
+                    head2 = head2[:7] + '/' + head2[7:]
+                    head = head[:7] + '-' + head[7:]
+                    head2 = head2[:10] + ' - ' + head2[10:]
+                    head = head[:10] + ':' + head[10:]
+                    head2 = head2[:15] + ':' + head2[15:]
+                    head = head[:13] + '-' + head[13:]
+                    head2 = head2[:-2]
+                    head = head[:-2]
+                    poo1 = ("%s:%s/streaming/timeshift.php?username=%s&password=%s&stream=%s&start=")%(userinfo.host,userinfo.port,username,password,description)
+                    pony = poo1 + str(head) + "&duration=240"
+                    head2 = '[COLOR purple]%s - [/COLOR]'%head2 
+                    kanalinimi = str(head2)+ programme.find('title').text
+                    desc  = programme.find('desc').text
+                    tools.addDir(kanalinimi,pony,4,icon,fanart,desc)
+                    xbmcplugin.setContent(int(sys.argv[1]), 'episodes')
+	
+					
+def DownloaderClass(url, dest):
+    dp = xbmcgui.DialogProgress()
+    dp.create('Fetching latest Catch Up',"Fetching latest Catch Up...",' ', ' ')
+    dp.update(0)
+    start_time=time.time()
+    urllib.urlretrieve(url, dest, lambda nb, bs, fs: _pbhook(nb, bs, fs, dp, start_time))
+
+def _pbhook(numblocks, blocksize, filesize, dp, start_time):
+        try: 
+            percent = min(numblocks * blocksize * 100 / filesize, 100) 
+            currently_downloaded = float(numblocks) * blocksize / (1024 * 1024) 
+            kbps_speed = numblocks * blocksize / (time.time() - start_time) 
+            if kbps_speed > 0: 
+                eta = (filesize - numblocks * blocksize) / kbps_speed 
+            else: 
+                eta = 0 
+            kbps_speed = kbps_speed / 1024 
+            mbps_speed = kbps_speed / 1024 
+            total = float(filesize) / (1024 * 1024) 
+            mbs = '[COLOR white]%.02f MB of less than 5MB[/COLOR]' % (currently_downloaded)
+            e = '[COLOR white]Speed:  %.02f Mb/s ' % mbps_speed  + '[/COLOR]'
+            dp.update(percent, mbs, e)
+        except: 
+            percent = 100 
+            dp.update(percent) 
+        if dp.iscanceled():
+            dialog = xbmcgui.Dialog()
+            dialog.ok(userinfo.addon_name, 'The download was cancelled.')
+				
+            sys.exit()
+            dp.close()
+#####################################################################
+
+def tvguide():
+	if xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)') and xbmc.getCondVisibility('System.HasAddon(script.ivueguide)'):
+		dialog = xbmcgui.Dialog().select('Select a TV Guide', ['PVR TV Guide','iVue TV Guide'])
+		if dialog==0:
+			xbmc.executebuiltin('ActivateWindow(TVGuide)')
+		elif dialog==1:
+			xbmc.executebuiltin('RunAddon(script.ivueguide)')
+	elif not xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)') and xbmc.getCondVisibility('System.HasAddon(script.ivueguide)'):
+		xbmc.executebuiltin('RunAddon(script.ivueguide)')
+	elif xbmc.getCondVisibility('System.HasAddon(pvr.iptvsimple)') and not xbmc.getCondVisibility('System.HasAddon(script.ivueguide)'):
+		xbmc.executebuiltin('ActivateWindow(TVGuide)')
+def stream_video(url):
+	url = str(url).replace('USERNAME',username).replace('PASSWORD',password)
+	liz = xbmcgui.ListItem('', iconImage='DefaultVideo.png', thumbnailImage=icon)
+	liz.setInfo(type='Video', infoLabels={'Title': '', 'Plot': ''})
+	liz.setProperty('IsPlayable','true')
+	liz.setPath(str(url))
+	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+	
 	
 def searchdialog():
-	search = control.inputDialog(heading='Search for a TV channel:')
+	search = control.inputDialog(heading='Search '+userinfo.addon_name+':')
 	if search=="":
 		return
 	else:
 		return search
+
 	
 def search():
+	if mode==3:
+		return False
 	text = searchdialog()
-	open = OPEN_URL(panel_api)
-	all_chans = regex_get_all(open,'{"num":','epg')
+	if not text:
+		xbmc.executebuiltin("XBMC.Notification([COLOR red][B]Search is Empty[/B][/COLOR],Aborting search,4000,"+icon+")")
+		return
+	xbmc.log(str(text))
+	open = tools.OPEN_URL(panel_api)
+	all_chans = tools.regex_get_all(open,'{"num":','epg')
 	for a in all_chans:
-		name = regex_from_to(a,'name":"','"').replace('\/','/')
-		url  = regex_from_to(a,'"stream_id":"','"')
-		thumb= regex_from_to(a,'stream_icon":"','"').replace('\/','/')
+		name = tools.regex_from_to(a,'name":"','"').replace('\/','/')
+		url  = tools.regex_from_to(a,'"stream_id":"','"')
+		thumb= tools.regex_from_to(a,'stream_icon":"','"').replace('\/','/')
 		if text in name.lower():
-			addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
+			tools.addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
 		elif text not in name.lower() and text in name:
-			addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
-			
+			tools.addDir(name,play_url+url+'.ts',4,thumb,fanart,'')
+
 	
+def settingsmenu():
+	tools.addDir('Edit Advanced Settings','ADS',10,icon,fanart,'')
+	tools.addDir('Log Out','LO',10,icon,fanart,'')
+	
+
+def addonsettings(url,description):
+	if   url =="CC":
+		tools.clear_cache()
+	elif url =="AS":
+		xbmc.executebuiltin('Addon.OpenSettings(%s)'%userinfo.addon_id)
+	elif url =="ADS":
+		dialog = xbmcgui.Dialog().select('Edit Advanced Settings', ['Enable Fire TV Stick AS','Enable Fire TV AS','Enable 1GB Ram or Lower AS','Enable 2GB Ram or Higher AS','Enable Nvidia Shield AS','Disable AS'])
+		if dialog==0:
+			advancedsettings('stick')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==1:
+			advancedsettings('firetv')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==2:
+			advancedsettings('lessthan')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==3:
+			advancedsettings('morethan')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==4:
+			advancedsettings('shield')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==5:
+			advancedsettings('remove')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Advanced Settings Removed')
+	elif url =="ADS2":
+		dialog = xbmcgui.Dialog().select('Select Your Device Or Closest To', ['Fire TV Stick ','Fire TV','1GB Ram or Lower','2GB Ram or Higher','Nvidia Shield'])
+		if dialog==0:
+			advancedsettings('stick')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==1:
+			advancedsettings('firetv')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==2:
+			advancedsettings('lessthan')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==3:
+			advancedsettings('morethan')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+		elif dialog==4:
+			advancedsettings('shield')
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'Set Advanced Settings')
+	elif url =="tv":
+		dialog = xbmcgui.Dialog().select('Select a TV Guide to Setup', ['iVue TV Guide','PVR TV Guide','Both'])
+		if dialog==0:
+			ivueint()
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'iVue Integration Complete')
+		elif dialog==1:
+			pvrsetup()
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'PVR Integration Complete')
+		elif dialog==2:
+			pvrsetup()
+			ivueint()
+			xbmcgui.Dialog().ok(userinfo.addon_name, 'PVR & iVue Integration Complete')
+	elif url =="ST":
+		xbmc.executebuiltin('Runscript("special://home/addons/'+userinfo.addon_id+'/resources/modules/speedtest.py")')
+	elif url =="META":
+		if 'ON' in description:
+			xbmcaddon.Addon().setSetting('meta','false')
+			xbmc.executebuiltin('Container.Refresh')
+		else:
+			xbmcaddon.Addon().setSetting('meta','true')
+			xbmc.executebuiltin('Container.Refresh')
+	elif url =="LO":
+		xbmcaddon.Addon().setSetting('Username','')
+		xbmcaddon.Addon().setSetting('Password','')
+		xbmc.executebuiltin('XBMC.ActivateWindow(Videos,addons://sources/video/)')
+		xbmc.executebuiltin('Container.Refresh')
+	elif url =="UPDATE":
+		if 'ON' in description:
+			xbmcaddon.Addon().setSetting('update','false')
+			xbmc.executebuiltin('Container.Refresh')
+		else:
+			xbmcaddon.Addon().setSetting('update','true')
+			xbmc.executebuiltin('Container.Refresh')
+	
+		
+def advancedsettings(device):
+	if device == 'stick':
+		file = open(os.path.join(advanced_settings, 'stick.xml'))
+	elif device == 'firetv':
+		file = open(os.path.join(advanced_settings, 'firetv.xml'))
+	elif device == 'lessthan':
+		file = open(os.path.join(advanced_settings, 'lessthan1GB.xml'))
+	elif device == 'morethan':
+		file = open(os.path.join(advanced_settings, 'morethan1GB.xml'))
+	elif device == 'shield':
+		file = open(os.path.join(advanced_settings, 'shield.xml'))
+	elif device == 'remove':
+		os.remove(advanced_settings_target)
+	
+	try:
+		read = file.read()
+		f = open(advanced_settings_target, mode='w+')
+		f.write(read)
+		f.close()
+	except:
+		pass
+		
+	
+def pvrsetup():
+	correctPVR()
+	return
+		
+		
+def asettings():
+	choice = xbmcgui.Dialog().yesno(userinfo.addon_name, 'Please Select The RAM Size of Your Device', yeslabel='Less than 1GB RAM', nolabel='More than 1GB RAM')
+	if choice:
+		lessthan()
+	else:
+		morethan()
+	
+
+def morethan():
+		file = open(os.path.join(advanced_settings, 'morethan.xml'))
+		a = file.read()
+		f = open(advanced_settings_target, mode='w+')
+		f.write(a)
+		f.close()
+
+		
+def lessthan():
+		file = open(os.path.join(advanced_settings, 'lessthan.xml'))
+		a = file.read()
+		f = open(advanced_settings_target, mode='w+')
+		f.write(a)
+		f.close()
+		
+		
 def userpopup():
 	kb =xbmc.Keyboard ('', 'heading', True)
 	kb.setHeading('Enter Username')
@@ -152,11 +445,12 @@ def userpopup():
 		return text
 	else:
 		return False
+
 		
 def passpopup():
 	kb =xbmc.Keyboard ('', 'heading', True)
 	kb.setHeading('Enter Password')
-	kb.setHiddenInput(True)
+	kb.setHiddenInput(False)
 	kb.doModal()
 	if (kb.isConfirmed()):
 		text = kb.getText()
@@ -165,47 +459,44 @@ def passpopup():
 		return False
 		
 		
-def stream_video(url):
-	liz = xbmcgui.ListItem('', iconImage='DefaultVideo.png', thumbnailImage=icon)
-	liz.setInfo(type='Video', infoLabels={'Title': '', 'Plot': ''})
-	liz.setProperty('IsPlayable','true')
-	liz.setPath(str(url))
-	xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+def accountinfo():
+	open = tools.OPEN_URL(panel_api)
+	try:
+		username   = tools.regex_from_to(open,'"username":"','"')
+		password   = tools.regex_from_to(open,'"password":"','"')
+		status     = tools.regex_from_to(open,'"status":"','"')
+		connects   = tools.regex_from_to(open,'"max_connections":"','"')
+		active     = tools.regex_from_to(open,'"active_cons":"','"')
+		expiry     = tools.regex_from_to(open,'"exp_date":"','"')
+		expiry     = datetime.datetime.fromtimestamp(int(expiry)).strftime('%d/%m/%Y - %H:%M')
+		expreg     = re.compile('^(.*?)/(.*?)/(.*?)$',re.DOTALL).findall(expiry)
+		for day,month,year in expreg:
+			month     = tools.MonthNumToName(month)
+			year      = re.sub(' -.*?$','',year)
+			expiry    = month+' '+day+' - '+year
+			ip        = tools.getlocalip()
+			extip     = tools.getexternalip()
+			tools.addDir('[COLOR purple]Username :[/COLOR] '+username,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Password :[/COLOR] '+password,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Expiry Date:[/COLOR] '+expiry,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Account Status :[/COLOR] %s'%status,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Current Connections:[/COLOR] '+ active,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Allowed Connections:[/COLOR] '+connects,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]Local IP Address:[/COLOR] '+ip,'','',icon,fanart,'')
+			tools.addDir('[COLOR purple]External IP Address:[/COLOR] '+extip,'','',icon,fanart,'')
+	except:pass
+		
 	
-def refresh():
-	xbmc.executebuiltin('Container.Refresh')
-	
-def asettings():
-	dialog = xbmcgui.Dialog()
-	choice = dialog.yesno('Gamma Streams', 'Please Select The RAM Size of Your Device', yeslabel='Less than 1GB RAM', nolabel='More than 1GB RAM')
-	if choice:
-		lessthan()
-	else:
-		morethan()
-
-			
-def tvguide():
-	xbmc.executebuiltin('ActivateWindow(TVGuide)')
-	
-def pvrsetup():
-	dialog = xbmcgui.Dialog()
-	choice = dialog.yesno('Gamma Streams', 'Would you like us to Setup the TV Guide for You?', yeslabel='Yes', nolabel='No')
-	if choice:
-		correctPVR()
-	else:
-		return
-	
-			
 def correctPVR():
 
-	addon = xbmcaddon.Addon('plugin.video.GammaStreams')
+	addon = xbmcaddon.Addon(userinfo.addon_id)
 	username_text = addon.getSetting(id='Username')
 	password_text = addon.getSetting(id='Password')
 	jsonSetPVR = '{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"pvrmanager.enabled", "value":true},"id":1}'
 	IPTVon 	   = '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.iptvsimple","enabled":true},"id":1}'
 	nulldemo   = '{"jsonrpc":"2.0","method":"Addons.SetAddonEnabled","params":{"addonid":"pvr.demo","enabled":false},"id":1}'
-	loginurl   = "http://gammaiptv.ddns.net:8127/get.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
-	EPGurl     = "http://gammaiptv.ddns.net:8127/xmltv.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
+	loginurl   = userinfo.host+':'+userinfo.port+"/get.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
+	EPGurl     = userinfo.host+':'+userinfo.port+"/xmltv.php?username=" + username_text + "&password=" + password_text + "&type=m3u_plus&output=ts"
 
 	xbmc.executeJSONRPC(jsonSetPVR)
 	xbmc.executeJSONRPC(IPTVon)
@@ -218,172 +509,48 @@ def correctPVR():
 	moist.setSetting(id='epgCache', value="false")
 	xbmc.executebuiltin("Container.Refresh")
 	
+def ivueint():
+	ivuesetup.iVueInt()
+	
+def tvguidesetup():
+		dialog = xbmcgui.Dialog().yesno(userinfo.addon_name,'Would You like us to Setup the TV Guide for You?')
+		if dialog:
+			dialog = xbmcgui.Dialog().select('Select a TV Guide to Setup', ['iVue TV Guide','PVR TV Guide','Both'])
+			if dialog==0:
+				ivueint()
+				xbmcgui.Dialog().ok(userinfo.addon_name, 'iVue Integration Complete')
+			elif dialog==1:
+				pvrsetup()
+				xbmcgui.Dialog().ok(userinfo.addon_name, 'PVR Integration Complete')
+			elif dialog==2:
+				pvrsetup()
+				ivueint()
+				xbmcgui.Dialog().ok(userinfo.addon_name, 'PVR & iVue Integration Complete')
 
-class Trailer:
-    def __init__(self):
-        self.base_link = 'http://www.youtube.com'
-        self.key_link = 'QUl6YVN5QnZES3JnSU1NVmRPajZSb1pnUWhaSzRHM3MybDZXeVhn'
-        self.key_link = '&key=%s' % base64.urlsafe_b64decode(self.key_link)
-        self.search_link = 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=5&q=%s'
-        self.youtube_search = 'https://www.googleapis.com/youtube/v3/search?q='
-        self.youtube_watch = 'http://www.youtube.com/watch?v=%s'
+def num2day(num):
+	if num =="0":
+		day = 'monday'
+	elif num=="1":
+		day = 'tuesday'
+	elif num=="2":
+		day = 'wednesday'
+	elif num=="3":
+		day = 'thursday'
+	elif num=="4":
+		day = 'friday'
+	elif num=="5":
+		day = 'saturday'
+	elif num=="6":
+		day = 'sunday'
+	return day
+	
+def extras():
+	tools.addDir('Create a Short M3U & EPG URL','url',17,icon,fanart,'')
+	tools.addDir('Integrate With TV Guide','tv',10,icon,fanart,'')
+	tools.addDir('Run a Speed Test','ST',10,icon,fanart,'')
+	tools.addDir('Clear Cache','CC',10,icon,fanart,'')
 
-    def play(self, name, url=None):
-        try:
-            url = self.worker(name, url)
-            if url == None: return
-
-            title = control.infoLabel('listitem.title')
-            if title == '': title = control.infoLabel('listitem.label')
-            icon = control.infoLabel('listitem.icon')
-
-            item = control.item(path=url, iconImage=icon, thumbnailImage=icon)
-            try: item.setArt({'icon': icon})
-            except: pass
-            item.setInfo(type='Video', infoLabels = {'title': title})
-            control.player.play(url, item)
-        except:
-            pass
-
-    def worker(self, name, url):
-        try:
-            if url.startswith(self.base_link):
-                url = self.resolve(url)
-                if url == None: raise Exception()
-                return url
-            elif not url.startswith('http://'):
-                url = self.youtube_watch % url
-                url = self.resolve(url)
-                if url == None: raise Exception()
-                return url
-            else:
-                raise Exception()
-        except:
-            query = name + ' trailer'
-            query = self.youtube_search + query
-            url = self.search(query)
-            if url == None: return
-            return url
-
-
-    def search(self, url):
-        try:
-            query = urlparse.parse_qs(urlparse.urlparse(url).query)['q'][0]
-
-            url = self.search_link % urllib.quote_plus(query) + self.key_link
-
-            result = client.request(url)
-
-            items = json.loads(result)['items']
-            items = [(i['id']['videoId']) for i in items]
-
-            for url in items:
-                url = self.resolve(url)
-                if not url is None: return url
-        except:
-            return
-
-
-    def resolve(self, url):
-        try:
-            id = url.split('?v=')[-1].split('/')[-1].split('?')[0].split('&')[0]
-            result = client.request('http://www.youtube.com/watch?v=%s' % id)
-
-            message = client.parseDOM(result, 'div', attrs = {'id': 'unavailable-submessage'})
-            message = ''.join(message)
-
-            alert = client.parseDOM(result, 'div', attrs = {'id': 'watch7-notification-area'})
-
-            if len(alert) > 0: raise Exception()
-            if re.search('[a-zA-Z]', message): raise Exception()
-
-            url = 'plugin://plugin.video.youtube/play/?video_id=%s' % id
-            return url
-        except:
-            return
-			
-def trailer(url):
-	xbmc.executebuiltin('ActivateWindow(busydialog)')
-	Trailer().play(url) 
-	xbmc.executebuiltin('Dialog.Close(busydialog)')
-
-def regex_from_to(text, from_string, to_string, excluding=True):
-	if excluding:
-		try: r = re.search("(?i)" + from_string + "([\S\s]+?)" + to_string, text).group(1)
-		except: r = ''
-	else:
-		try: r = re.search("(?i)(" + from_string + "[\S\s]+?" + to_string + ")", text).group(1)
-		except: r = ''
-	return r
-
-
-def regex_get_all(text, start_with, end_with):
-	r = re.findall("(?i)(" + start_with + "[\S\s]+?" + end_with + ")", text)
-	return r
-
-
-def get_params():
-	param=[]
-	paramstring=sys.argv[2]
-	if len(paramstring)>=2:
-		params=sys.argv[2]
-		cleanedparams=params.replace('?','')
-		if (params[len(params)-1]=='/'):
-			params=params[0:len(params)-2]
-		pairsofparams=cleanedparams.split('&')
-		param={}
-		for i in range(len(pairsofparams)):
-			splitparams={}
-			splitparams=pairsofparams[i].split('=')
-			if (len(splitparams))==2:
-				param[splitparams[0]]=splitparams[1]
-	return param
-
-
-def addDir(name,url,mode,iconimage,fanart,description):
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&iconimage="+urllib.quote_plus(iconimage)+"&description="+urllib.quote_plus(description)
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={"Title": name,"Plot":description})
-	liz.setProperty('fanart_image', fanart)
-	cm = []
-	cm.append(('Run Speed Test','Runscript("special://home/addons/plugin.video.GammaStreams/resources/modules/speedtest.py")'))
-	liz.addContextMenuItems(cm)
-	if mode==4:
-		liz.setProperty("IsPlayable","true")
-		cm = []
-		cm.append(('Play Trailer','XBMC.RunPlugin(plugin://plugin.video.GammaStreams/?mode=8&url='+str(name)+')'))
-		liz.addContextMenuItems(cm)
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-	elif mode==7:
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=False)
-	else:
-		ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
-	return ok
-	xbmcplugin.endOfDirectory
-
-def OPEN_URL(url):
-	headers = {}
-	headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
-	link = requests.session().get(url, headers=headers, verify=False).text
-	link = link.encode('ascii', 'ignore')
-	return link
-
-def morethan():
-		file = open(os.path.join(advanced_settings, 'morethan.xml'))
-		a = file.read()
-		f = open(advanced_settings_target, mode='w+')
-		f.write(a)
-		f.close()
-		
-def lessthan():
-		file = open(os.path.join(advanced_settings, 'lessthan.xml'))
-		a = file.read()
-		f = open(advanced_settings_target, mode='w+')
-		f.write(a)
-		f.close()
-
-params=get_params()
+params=tools.get_params()
 url=None
 name=None
 mode=None
@@ -446,7 +613,41 @@ elif mode==7:
 	tvguide()
 	
 elif mode==8:
-	trailer(url)
+	settingsmenu()
+	
+elif mode==9:
+	xbmc.executebuiltin('ActivateWindow(busydialog)')
+	tools.Trailer().play(url) 
+	xbmc.executebuiltin('Dialog.Close(busydialog)')
+	
+elif mode==10:
+	addonsettings(url,description)
+	
+elif mode==11:
+	pvrsetup()
+	
+elif mode==12:
+	catchup()
 
+elif mode==13:
+	tvarchive(name,description)
+	
+elif mode==14:
+	listcatchup2()
+	
+elif mode==15:
+	ivueint()
+	
+elif mode==16:
+	extras()
+	
+elif mode==17:
+	shortlinks.Get()
+
+elif mode==18:
+	footballguidesearch(description)
+	
+elif mode==19:
+	get()
 
 xbmcplugin.endOfDirectory(int(sys.argv[1]))

@@ -1,21 +1,20 @@
 <?xml version="1.1" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.GammaStreams"
-       name="[COLOR purple][B]Gamma Streams[/B][/COLOR]"
-       version="1.2"
+       name="[COLOR purple]Gamma[/COLOR] [COLOR green]Streams[/COLOR]"
+       version="1.3"
        provider-name="sClarke">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
 	<import addon="script.module.requests" />
-	<import addon="script.module.simple.downloader" version="1.9.5"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
             library="default.py">
         <provides>video</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">GammaStreams</summary>
+    <summary lang="en">Gamma Streams</summary>
     <language>en</language>
-    <description lang="en">GammaStreams Official Addon </description>
+    <description lang="en">Gamma Streams Official Addon - Supplier of Great Quality and Stable Streams</description>
      <platform>all</platform>
   </extension>
 </addon>
