@@ -1,4 +1,4 @@
-import os,re,sys,xbmc,json,base64,client,control,string,urllib,urlparse,requests,shutil,xbmcplugin,xbmcgui,socket
+import os,re,sys,xbmc,json,base64,client,control,string,urllib,urlparse,requests,shutil,xbmcplugin,xbmcgui,socket,userinfo
 
 def regex_from_to(text, from_string, to_string, excluding=True):
 	if excluding:
