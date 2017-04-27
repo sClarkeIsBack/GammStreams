@@ -463,7 +463,6 @@ def accountinfo():
 	open = tools.OPEN_URL(panel_api)
 	try:
 		username   = tools.regex_from_to(open,'"username":"','"')
-		password   = tools.regex_from_to(open,'"password":"','"')
 		status     = tools.regex_from_to(open,'"status":"','"')
 		connects   = tools.regex_from_to(open,'"max_connections":"','"')
 		active     = tools.regex_from_to(open,'"active_cons":"','"')
@@ -477,7 +476,6 @@ def accountinfo():
 			ip        = tools.getlocalip()
 			extip     = tools.getexternalip()
 			tools.addDir('[COLOR purple]Username :[/COLOR] '+username,'','',icon,fanart,'')
-			tools.addDir('[COLOR purple]Password :[/COLOR] '+password,'','',icon,fanart,'')
 			tools.addDir('[COLOR purple]Expiry Date:[/COLOR] '+expiry,'','',icon,fanart,'')
 			tools.addDir('[COLOR purple]Account Status :[/COLOR] %s'%status,'','',icon,fanart,'')
 			tools.addDir('[COLOR purple]Current Connections:[/COLOR] '+ active,'','',icon,fanart,'')

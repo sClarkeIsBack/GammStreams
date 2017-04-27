@@ -1,7 +1,7 @@
 <?xml version="1.1" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.GammaStreams"
        name="[COLOR purple]Gamma[/COLOR] [COLOR green]Streams[/COLOR]"
-       version="1.4"
+       version="1.5"
        provider-name="sClarke">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
